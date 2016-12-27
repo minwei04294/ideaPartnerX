@@ -3,11 +3,11 @@
 
 __author__ = 'ZQ'
 
-from settings import *
-from logger import *
+from Common.settings import *
+from Common.logger import *
 import os, zipfile, traceback, json, re
 import xml.dom.minidom as xdm
-from oracleUtil import OracleHelper
+from Common.oracleUtil import OracleHelper
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
