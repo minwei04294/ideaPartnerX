@@ -4,13 +4,17 @@
 
 __author__ = 'wangjun'
 
-import traceback,re,json,sys,urllib
-from Common.oracleUtil import OracleHelper
-from Common.accessToken import AccessToken
+import json
+import re
+import traceback
+import urllib
+
 from Common.logger import logger
-from Common.settings import *
-from Common.StructuralData import logDataManage
+from Common.oracleUtil import OracleHelper
 from Common.public import replaceIntForDict
+from Common.settings import *
+from Work_Common.StructuralData import logDataManage
+from Work_Common.accessToken import AccessToken
 
 reload(sys)
 sys.setdefaultencoding('utf-8')

@@ -3,12 +3,10 @@
 # 用于数据数据编辑请求的挖掘驱动
 __author__ = 'wangjun'
 
-from Common.logger import logger
-from Common.settings import *
-from tactics_drivers.EditFastRegressionDriver import *
-from Common.GetFiddlerData import *
-from tactics_drivers.SmokeDriver import *
 import sys
+
+from Work_Common.GetFiddlerData import *
+from tactics_drivers.SmokeDriver import *
 
 if __name__ == '__main__':
     Logger = logger(logfilename)
