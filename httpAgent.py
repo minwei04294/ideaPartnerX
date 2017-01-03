@@ -5,7 +5,7 @@ __author__ = 'wangjun'
 from Common.logger import logger
 from Common.settings import *
 from Http_agent.CollectHttpData import CollectHttpData
-import os,threading,time
+import os,threading,time,ConfigParser
 def runCollectHttpData(Logger,DBConnConfig,PcapfilePath,fileCount):
     CollectHttpData(Logger,DBConnConfig,PcapfilePath,fileCount)
 def runTcpDump(cmd):
@@ -14,22 +14,18 @@ def runTcpDump(cmd):
 if __name__ == '__main__':
     #日志对象
     Logger = logger(logfilename)
+    cf = ConfigParser.ConfigParser()
+    cf.read("conf/httpAgent.ini")
     #pcap文件交互履历
-    PcapfilePath="/Users/wangjun/Workspace/GitHub/ideaPartnerX/Http_agent/soursePath"
+    PcapfilePath=cf.get("config","PcapfilePath")
     if not os.path.exists(PcapfilePath):
          os.mkdir(PcapfilePath)
     #抓包命令
     GetPcapcommand="ping 192.168.4.188 "
     #监控数据库信息:
-    DBConnConfig={
-        "dbname":"orcl",
-        "host":"192.168.4.131",
-        "user":"LOG_TEST",
-        "passwd":"LOG_TEST",
-        "port":"1521"
-    }
+    DBConnConfig=eval(cf.get("config","DBConnConfig"))
     #批次解析总数
-    fileCount=10
+    fileCount=cf.getint("config","fileCount")
     #线程池
     threadpool=[]
     #执行抓包
