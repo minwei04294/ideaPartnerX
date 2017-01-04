@@ -15,8 +15,8 @@ FM_Sys_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_sys_test","passwd
 
 # 道路履历库信息
 LogTestDBConf={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
-
-
+# 收集服务系统库
+IPX_ServerDBConf={"dbname":"orcl","host":"192.168.4.131","user":"IPX_SERVER","passwd":"IPX_SERVER","port":"1521"}
 # 输出日志文件名
 #logPath = os.path.dirname(os.path.realpath(sys.path[0]))+os.sep+'logs'
 logPath = os.path.realpath(sys.path[0])+os.sep+'logs'

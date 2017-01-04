@@ -26,6 +26,8 @@ if __name__ == '__main__':
     DBConnConfig=eval(cf.get("config","DBConnConfig"))
     #批次解析总数
     fileCount=cf.getint("config","fileCount")
+    #监控主机名
+    host=cf.get("config","Host")
     #线程池
     threadpool=[]
     #执行抓包
@@ -39,6 +41,11 @@ if __name__ == '__main__':
     i=1
     while(i):
         #Logger.Log(u"执行%s"%str(i))
-        CollectHttpData(Logger,DBConnConfig,PcapfilePath,fileCount)
+        collect=CollectHttpData(Logger,DBConnConfig,PcapfilePath,fileCount)
+        msg=collect.serverMsy(host,IPX_ServerDBConf)
+        if msg:
+            collect.collect()
+        else:
+            Logger.Log(u"采集服务端已将我退役,我已无法为您服务!!!")
         time.sleep(5)
         #i+=1

@@ -23,7 +23,7 @@ class CollectHttpData:
         #一批次解析文件数量
         self.fileCount=fileCount
         #执行
-        self.collect()
+        #self.collect()
     #创建数据库连接
     def connectDB(self):
         self.DBConnect=OracleHelper(self.connConfig,self._logger)
@@ -78,8 +78,23 @@ class CollectHttpData:
         self.setHttpData2DB(httpItems)
         self.PcapFile2BackUp(filename)
     #服务交互
-    def serverMsy(self):
-        pass
+    def serverMsy(self,host,conn):
+        try:
+            DBconnServer=OracleHelper(conn,self._logger)
+            findSql="SELECT STATUS FROM HOST A WHERE A.HOST_NAME='%s'"
+            HOST=DBconnServer.executeSQL(findSql%host)
+            if not HOST:
+                insertSql="INSERT INTO HOST (HOST_ID,HOST_NAME,HOST_TYPE,PARS,CMD,CREATE_TIME,HOST,DB_ID,STATUS)" \
+                          "VALUES (HOSTID.NEXTVAL,'%s','HttpAgent',NULL,NULL,SYSDATE,'%s',0,0)"
+                DBconnServer.executeSQL(insertSql%(host,host))
+                return True
+            elif HOST[0]['STATUS']=='0':
+                return True
+            elif HOST[0]['STATUS']=='1':
+                return False
+        except Exception as e:
+            self._logger.Log(u"代理与服务交互失败,失败原因:%s"%traceback.format_exc(1),InfoLevel.ERROR_Level)
+            return False
     #继承执行
     def collect(self):
         #10个文件为一批解析
