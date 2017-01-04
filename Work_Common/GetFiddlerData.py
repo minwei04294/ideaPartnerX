@@ -3,11 +3,12 @@
 
 __author__ = 'ZQ'
 
-from Common.settings import *
-from Common.logger import *
+from settings import *
+from logger import *
 import os, zipfile, traceback, json, re
 import xml.dom.minidom as xdm
-from Common.oracleUtil import OracleHelper
+from oracleUtil import OracleHelper
+from tactics_drivers.EditFastRegressionDriver import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -27,8 +28,13 @@ class FilesPreprocess():
                 if portion[1] == '.saz':
                     newname = portion[0] + '.zip'
                     os.rename(os.path.join(path, filename), os.path.join(path, newname))
+                elif portion[1] == '.zip':
+                    continue
+                else:
+                    self._logger.Log(u"文件 %s 的后缀不是“.saz”，不执行重命名。" % filename, InfoLevel.INFO_Level)
         except Exception:
             self._logger.Log(u"文件重命名为zip时失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
 
     #传入解压后路径，对zip执行解压
     def UnzipFiles(self, zipfilename, unzipdir):
@@ -39,7 +45,8 @@ class FilesPreprocess():
             #Check input ...
             if not os.path.exists(fullzipfilename):
                 self._logger.Log(u"目录/文件 %s 不存在！" % fullzipfilename.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
-                return
+                raise Exception(u"目录/文件 %s 不存在！")
+                # return
             if not os.path.exists(fullunzipdir):
                 os.mkdir(fullunzipdir)
             else:
@@ -61,6 +68,7 @@ class FilesPreprocess():
             self._logger.Log(u"解压 %s 完成！" % zipfilename.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
         except Exception:
             self._logger.Log(u"执行解压文件失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
 
     #对fiddler文件执行改后缀和解压
     def RunPreprocess(self, unzipdir):
@@ -88,10 +96,25 @@ class Analysis():
             with open(os.path.join(self.filepath, self.filename), 'r') as ft:
                 lines = ft.readlines()
                 for t in lines:
-                    if t.find("GET ") >= 0:
-                        content["request"] = str(t).replace('GET ', '').replace(' HTTP/1.1', '').replace('\n', '')
+                    # if t.find("GET ") >= 0:
+                    #     content["request"] = str(t).replace('GET ', '').replace(' HTTP/1.1', '').replace('\n', '')
+                    if t.find("parameter=") >= 0:
+                        if t.startswith("GET "):
+                            content["request"] = str(t).replace('GET ', '').replace(' HTTP/1.1', '').replace('\n', '')
+                        elif t.startswith("parameter="):
+                            parm1 = str(t).replace('\n', '')
+                            parm2 = ''
+                            for p in lines:
+                                if p.find("POST ") >= 0:
+                                    parm2 = str(p).replace('POST ', '').replace(' HTTP/1.1', '').replace('\n', '')
+                            if parm2:
+                                content["request"] = parm2 + '&' + parm1
+                            else:
+                                self._logger.Log(u"未找到POST参数！", InfoLevel.ERROR_Level)
+                                raise Exception(u"未找到POST参数！")
         except Exception:
             self._logger.Log(u"解析C文件失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
         return content
 
     #解析S文件得到response
@@ -105,6 +128,7 @@ class Analysis():
                         response["response"] = json.dumps(re.findall(r"\{\"errmsg+.*",t)[0],sort_keys=True,ensure_ascii=False)
         except Exception:
             self._logger.Log(u"解析S文件失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
         return response
 
     #解析M文件得到time
@@ -119,6 +143,7 @@ class Analysis():
             message["time"] = temp1
         except Exception:
             self._logger.Log(u"解析M文件失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
         return message
 
 #初始化LOG_TEST库中FIDDLER_BASE_DATA表数据
@@ -151,6 +176,7 @@ class IniBaseData():
                                 idlist.append(portion[0][:len(portion[0])-2])
                     except Exception:
                         self._logger.Log(u"获取路径下文件编号，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+                        raise Exception
                     #按文件编号获取对应的c/m/s
                     try:
                         for i in idlist:
@@ -163,29 +189,57 @@ class IniBaseData():
                             self.oracleObject.insertData2WithParam(sql_insert, [c["request"], s["response"], fileid.decode('gbk').encode('utf-8'), m["time"]])
                     except Exception:
                         self._logger.Log(u"按文件编号获取对应的c/m/s，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+                        raise Exception
         except Exception:
             self._logger.Log(u"遍历解析被解压文件异常: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+            raise Exception
         self.oracleObject.commitData()
 
-    #解密url
+    #格式化REQUEST请求数据
     def FormatREQ(self):
         try:
-            sql_reqformat = 'UPDATE FIDDLER_BASE_DATA l SET l.REQ=replace(replace(replace(replace(replace(l.REQ,\'%7B\',\'{\'),\'%7D\',\'}\'),\'%22\',\'"\'),\'%5B\',\'[\'),\'%5D\',\']\')'
+            sql_reqformat = 'UPDATE FIDDLER_BASE_DATA l SET l.REQ=replace(replace(replace(replace(replace(replace(replace(l.REQ,\'%7B\',\'{\'),\'%7D\',\'}\'),\'%22\',\'"\'),\'%5B\',\'[\'),\'%5D\',\']\'),\'%3A\',\':\'),\'%2C\',\',\')'
             self.oracleObject.executeSQL(sql_reqformat)
         except Exception:
-            self._logger.Log(u"解密url执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+            self._logger.Log(u"格式化REQUEST请求数据，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+            raise Exception
 
     def run(self):
-        FilesPreprocess(self.zipdir, self._logger).RunPreprocess(self.unzipdir)
-        self.SplicingAnalysisResult()
-        self.FormatREQ()
+        try:
+            self._logger.Log(u"="*60)
+            self._logger.Log(u"初始化fiddler数据，执行开始",InfoLevel.INFO_Level)
+            self._logger.Log(u"执行解压saz文件",InfoLevel.INFO_Level)
+            FilesPreprocess(self.zipdir, self._logger).RunPreprocess(self.unzipdir)
+            self._logger.Log(u"执行增量写入FIDDLER_BASE_DATA表",InfoLevel.INFO_Level)
+            self.SplicingAnalysisResult()
+            self._logger.Log(u"执行格式化REQUEST请求数据",InfoLevel.INFO_Level)
+            self.FormatREQ()
+            #将FIDDLER_BASE_DATA表数据写入STRATEGY_EDIT_FAST_REGRESSION表
+            ATD = analyzeTacticsData(LogTestDBConf, self._logger)
+            self._logger.Log(u"执行增量写入STRATEGY_EDIT_FAST_REGRESSION表",InfoLevel.INFO_Level)
+            ATD.getTempData()
+            self._logger.Log(u"执行中间件扩展字段赋值",InfoLevel.INFO_Level)
+            ATD.setTempTypeData()
+            self._logger.Log(u"执行中间件编辑类型赋值",InfoLevel.INFO_Level)
+            ATD.setTempNewFieldData()
+            self._logger.Log(u"执行中间件logid赋值",InfoLevel.INFO_Level)
+            ATD.setTempLogidData()
+            self._logger.Log(u"初始化fiddler数据，执行结束",InfoLevel.INFO_Level)
+            self._logger.Log(u"="*60)
+        except Exception:
+            self._logger.Log(u"初始化fiddler数据，执行异常: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
 
 if __name__ == "__main__":
-    Logger=logger(logfilename)
+    Logger = logger(logfilename)
     Conn = {"dbname": "orcl", "host": "192.168.4.131", "user": "LOG_TEST", "passwd": "LOG_TEST", "port": "1521"}
-    zip = 'D:\\fiddlerdata'
-    unzip = 'D:\unzip'
-    FilesPreprocess(zip, Logger).RunPreprocess(unzip)
-    p = IniBaseData(Conn, Logger)
-    p.SplicingAnalysisResult(unzip)
-    p.FormatREQ()
+    # zip = 'D:\\fiddlerdata'
+    # unzip = 'D:\unzip'
+    # FilesPreprocess(zip, Logger).RunPreprocess(unzip)
+    # p = IniBaseData(Conn, Logger)
+    # p.SplicingAnalysisResult(unzip)
+    # p.FormatREQ()
+    filepath = 'C:\Users\ZQ\Desktop'
+    filename = '09_c.txt'
+    ac = Analysis(filepath, filename, Logger)
+    c = ac.AnalysisCfile()
+    print c

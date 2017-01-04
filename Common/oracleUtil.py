@@ -105,7 +105,17 @@ class OracleHelper(object):
         try:
             self._logger.Log(u"Oracle数据库模块执行SELECT_SQL:{0}".format(sql))
             self.cursor.execute(sql)
-            resultList = self.cursor.fetchall()
+            resultList = []
+            retRowValues = self.cursor.fetchall()
+            retColNames = [i[0] for i in self.cursor.description]
+            for retRowValue in retRowValues:
+                count=0
+                rowDict={}
+                for retColName in retColNames:
+                    values = retRowValue[count]
+                    rowDict.update({retColName:values})
+                    count += 1
+                resultList.append(rowDict)
             return resultList
         except Exception:
             self._logger.Log(u"执行select语句失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
@@ -140,5 +150,6 @@ if __name__ == '__main__':
     Logger = logger(logfilename)
     oracleobj = OracleHelper(LogTestDBConf, Logger)
     sql = "SELECT DISTINCT L.TYPE, L.LOG_ID FROM strategy_edit_fast_regression l WHERE l.c_id='test-副本'"
+    # sql1 = "SELECT COUNT(1) FROM strategy_edit_fast_regression l WHERE l.c_id='test-副本'"
     result = oracleobj.selectData(sql)
     print result
