@@ -54,11 +54,14 @@ class CollectHttpData:
     #写入数据库
     def setHttpData2DB(self,httpItems):
         insertSql="INSERT INTO HTTP_BASE_DATA(ID,REQ,ACK,FILEID,REQ_DATE,\"DATE\") VALUES(BASE_DATA_ID.NEXTVAL," \
-                  "TO_CLOB(:ReqData),TO_CLOB(:AckData),:FileID,TO_DATE(:ReqTime,'yyyy-mm-dd hh24:mi:ss')," \
+                  ":ReqData,:AckData,:FileID,TO_DATE(:ReqTime,'yyyy-mm-dd hh24:mi:ss')," \
                   "TO_DATE(:AckTime,'yyyy-mm-dd hh24:mi:ss'))"
         for httpItem in httpItems:
+            self.DBConnect.cursor.setinputsizes(ReqData=self.DBConnect.getColbObject())
+            self.DBConnect.cursor.setinputsizes(AckData=self.DBConnect.getColbObject())
+            print type(httpItem["ReqData"])
             httpItem.pop("HostIP");httpItem.pop("HttpCode");
-            self.DBConnect.changeData2WithParam(insertSql,httpItem)
+            self.DBConnect.insertData2WithParam(insertSql,httpItem)
         self.DBConnect.commitData()
     #执行数据包文件转移
     def PcapFile2BackUp(self,filename):
@@ -68,7 +71,7 @@ class CollectHttpData:
         if not os.path.exists(filePath):
             self._logger.Log(u"(soursePath)未找到相应Pcap文件!!")
         else:
-            if not os.path.exists(targetPath):
+            if not os.path.exists(self.targetPath):
                 os.mkdir(targetPath)
             shutil.move(filePath,targetPath)
             self._logger.Log(u"移动Pcap文件到备份路径(targetPath)成功!!")

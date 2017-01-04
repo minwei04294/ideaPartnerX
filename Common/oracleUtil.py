@@ -38,6 +38,9 @@ class OracleHelper(object):
     def cursor(self):
         return self.__cursor
 
+    def getColbObject(self):
+        return cx_Oracle.CLOB
+
     def __del__(self):
         try:
             if self.cursor: self.cursor.close()
@@ -116,7 +119,7 @@ class OracleHelper(object):
             create database link %s
             connect to %s identified by %s USING
             '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = %s )(PORT = %s )))(CONNECT_DATA = (SERVICE_NAME = %s )))'
-            """ % (dblink_name, conf["user"], conf["passwd"], conf["host"], conf["port"], conf["sname"])
+            """ % (dblink_name, conf["user"], conf["passwd"], conf["host"], conf["port"], conf["dbame"])
         try:
             self.cursor.execute(sql)
         except Exception as e:
