@@ -25,6 +25,7 @@ class SmokeRunner(object):
             case_count = self.oracleObject.selectData(sql)
         except Exception:
             self._logger.Log(u"执行获取测试集合对应的请求总数失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
         return case_count
     #替换logid
     def replacelogid(self, target, where):
@@ -34,18 +35,19 @@ class SmokeRunner(object):
             self.oracleObject.commitData()
         except Exception:
             self._logger.Log(u"执行替换logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
     #筛选有效logid
     def GetExecutLogid(self, case_name):
         logidlist = []
         try:
-            sql = "SELECT DISTINCT L.TYPE, L.LOG_ID FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'".format(case_name)
+            sql = "SELECT DISTINCT L.\"DESC\", L.LOG_ID FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'".format(case_name)
             while 1:
                 #提示用户替换logid
                 logids = self.oracleObject.selectData(sql)
                 self._logger.Log(u"测试集合【%s】对应的测试数据集id如下：" % (case_name), InfoLevel.INFO_Level)
                 for logs in logids:
                     # print logs["DESC"],logs["LOG_ID"]
-                    self._logger.Log(u"【%s】 ：【%s】 " % (logs["TYPE"],logs["LOG_ID"]), InfoLevel.INFO_Level)
+                    self._logger.Log(u"【%s】 ：【%s】 " % (logs["DESC"],logs["LOG_ID"]), InfoLevel.INFO_Level)
                 self._logger.Log(u"是否需要替换测试数据集id？ Y/N", InfoLevel.INFO_Level)
                 choose = raw_input()
                 if choose == 'Y' or choose == 'y':
@@ -59,10 +61,12 @@ class SmokeRunner(object):
                     break
             #筛选有效logid
             for logid in logids:
-                if not (logid["LOG_ID"] == 'error:Non find information' or logid["LOG_ID"] == '数据集ID不唯一' ):
-                    logidlist.append(logid["LOG_ID"])
+                if not (logid["LOG_ID"] == 'error:Non find information' or logid["LOG_ID"] == '数据集ID不唯一' or logid["LOG_ID"] is None):
+                    if logid["LOG_ID"] not in logidlist:
+                        logidlist.append(logid["LOG_ID"])
         except Exception:
             self._logger.Log(u"执行筛选有效logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
         return logidlist
     #获取请求的执行结果
     def GetResultCount(self, case_name):
@@ -76,6 +80,7 @@ class SmokeRunner(object):
                 else: SkipCount = Result["COUNT(1)"]
         except Exception:
             self._logger.Log(u"执行筛选有效logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            raise Exception
         return SucCount, FailCount, SkipCount
     #执行请求
     def RunTestCase(self, case_name):
@@ -113,7 +118,7 @@ class SmokeRunner(object):
     #执行冒烟测试
     def run(self, case_list):
         self._logger.Log(u"="*60)
-        self._logger.Log(u"冒烟测试执行开始")
+        self._logger.Log(u"冒烟测试执行开始",InfoLevel.INFO_Level)
         execCaseList = []
         total_case_count = suc_case_count = fail_case_count = skip_case_count = 0
         iTotalApiCount = iSucApiCount = iFailApiCount = iSkipApiCount = 0
@@ -140,14 +145,18 @@ class SmokeRunner(object):
                     self._logger.Log(u"执行测试集合失败：%s" % traceback.format_exc(), InfoLevel.INFO_Level)
                 self._logger.Log(u"测试集合【%s】执行结束，需要执行【%d】个接口请求，其中成功：【%d】，失败：【%d】，未执行：【%d】"
                                  %(testCase, iTotalApiCount, iSucApiCount, iFailApiCount, iSkipApiCount), InfoLevel.INFO_Level)
-                if iFailApiCount > 0 or iSkipApiCount > 0:
+                if iFailApiCount > 0 or iSkipApiCount > 0 :
                     fail_case_count += 1
-                else:
+                elif iSucApiCount > 0 :
                     suc_case_count += 1
-        self._logger.Log(u"冒烟测试执行结束，共有【%d】个测试集合，执行了【%d】个测试套件，其中成功:【%d】，失败:【%d】，未找到:【%d】"
+        self._logger.Log(u"冒烟测试执行结束，共有【%d】个测试集合，执行了【%d】个测试集合，其中成功:【%d】，失败:【%d】，未找到:【%d】"
                          %(total_case_count, total_case_count-skip_case_count, suc_case_count, fail_case_count, skip_case_count), InfoLevel.INFO_Level)
         self._logger.Log(u"="*60)
 
 if __name__ == '__main__':
     Logger = logger(logfilename)
+    s = SmokeRunner(257, 3680, LogTestDBConf, Logger)
+    case_name = '里程桩'
+    list = s.GetExecutLogid(case_name)
+    print list
 
