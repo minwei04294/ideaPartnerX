@@ -4,15 +4,11 @@
 
 __author__ = 'wangjun'
 
-import json
-import re
-import traceback
-import urllib
-
-from Common.logger import logger
+import traceback,re,json,sys,urllib
 from Common.oracleUtil import OracleHelper
-from Common.public import replaceIntForDict
+from Common.logger import logger
 from Common.settings import *
+from Common.public import replaceIntForDict
 from Work_Common.StructuralData import logDataManage
 from Work_Common.accessToken import AccessToken
 
@@ -60,6 +56,8 @@ class  analyzeTacticsData:
             sql="SELECT ID,to_char(REQ) as REQ FROM STRATEGY_EDIT_FAST_REGRESSION "
             tempData=self.oracleObject.executeSQL(sql)
             for temp in tempData:
+                # print str(temp['REQ']))[0]
+                # print re.findall(r'.*parameter=(.*)$',str(temp['REQ']))[0]
                 tempReqParam=json.loads(re.findall(r'.*parameter=(.*)$',str(temp['REQ']))[0])
                 temp['type']=tempReqParam['type']
                 temp['command']=tempReqParam['command']
@@ -98,13 +96,13 @@ class  analyzeTacticsData:
             tempData=self.oracleObject.executeSQL(sql)
             for temp in tempData:
                 temp['REQ']=json.loads(re.findall(r'.*parameter=(.*)$',str(temp['REQ']))[0])
-                temp['ACK']=eval(json.loads(temp['TO_CHAR(ACK)']))
+                temp['ACK']=json.loads(temp['TO_CHAR(ACK)'])
                 if 'type' not in temp['REQ'] or 'objId' not in temp['REQ']:
                    logid='error:Non find information'
                 else:
                     tabNamePid=temp['REQ']['type']+str(temp['REQ']['objId'])
                     logList=oracleObjectLog.executeSQL(findLogSql%tabNamePid)
-                    if not logList or len(logList) == 1:
+                    if logList and len(logList) == 1:
                         logid=logList[0]['DATA_SET_ID']
                     elif len(logList)>1:
                         if temp['ACK']["data"]["log"]:
@@ -142,10 +140,7 @@ class  analyzeTacticsData:
         return AccessToken()
 
     def run(self):
-        self.getTempData()
-        self.setTempTypeData()
-        self.setTempNewFieldData()
-        self.setTempLogidData()
+        pass
 
 #驱动快速回归
 class EditFastRegression:
@@ -220,7 +215,7 @@ class EditFastRegression:
         updateSql="UPDATE STRATEGY_EDIT_FAST_REGRESSION SET RESULT=:1 WHERE ID=:2"
         try:
             httpObject=urllib.urlopen(req)
-            self._logger.Log(u"执行%s操作请求成功,URL:%s"%(type,req), InfoLevel.INFO_Level)
+            self._logger.Log(u"执行%s操作请求,URL:%s"%(type,req), InfoLevel.INFO_Level)
             responeValue=httpObject.read()
             self._logger.Log(u"执行%s操作请求返回值,URL:%s"%(type,responeValue), InfoLevel.INFO_Level)
             respone=json.loads(responeValue)
@@ -244,18 +239,17 @@ class EditFastRegression:
 
 if __name__ == '__main__':
     Logger=logger(logfilename)
-    Conn={"dbname":"orcl","host":"192.168.4.61","user":"fm_regiondb260_test_d_208","passwd":"fm_regiondb260_test_d_208","port":"1521"}
-    sourceField='NUMID,EXEC_URL,RESPONSE,RESP_TIME'
-    conditionString="TO_CHAR(EXEC_URL) LIKE '%/service/edit/run/%' ORDER BY NUMID"
-    #sql="INSERT INTO  strategy_edit_fast_regression ({0}) SELECT {1} FROM EDIT_BASE_DATA_ZQ  WHERE {2}".format(targetField,sourceField,conditionString)
-    sql="SELECT {0} FROM EDIT_BASE_DATA_ZQ  WHERE {1}".format(sourceField,conditionString)
-    print sql
-    object1=OracleHelper(Conn,Logger)
-    TacticsData=object1.executeSQL(sql)
-    print TacticsData
-    for Data in TacticsData:
-        print Data['EXEC_URL']
+    # Conn={"dbname":"orcl","host":"192.168.4.61","user":"fm_regiondb260_test_d_208","passwd":"fm_regiondb260_test_d_208","port":"1521"}
+    # sourceField='NUMID,EXEC_URL,RESPONSE,RESP_TIME'
+    # conditionString="TO_CHAR(EXEC_URL) LIKE '%/service/edit/run/%' ORDER BY NUMID"
+    # #sql="INSERT INTO  strategy_edit_fast_regression ({0}) SELECT {1} FROM EDIT_BASE_DATA_ZQ  WHERE {2}".format(targetField,sourceField,conditionString)
+    # sql="SELECT {0} FROM EDIT_BASE_DATA_ZQ  WHERE {1}".format(sourceField,conditionString)
+    # print sql
+    # object1=OracleHelper(Conn,Logger)
+    # TacticsData=object1.executeSQL(sql)
+    # print TacticsData
+    # for Data in TacticsData:
+    #     print Data['EXEC_URL']
 
-
-    #ATD=analyzeTacticsData(Conn,Logger)
-    #ATD.getTempData()
+    # ATD=analyzeTacticsData(LogTestDBConf,Logger)
+    # ATD.setTempLogidData()
