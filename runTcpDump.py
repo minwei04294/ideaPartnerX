@@ -20,7 +20,7 @@ if __name__ == '__main__':
     if not os.path.exists(PcapfilePath):
          os.mkdir(PcapfilePath)
     #抓包命令
-    GetPcapcommand="tcpdump –i {0} -vnn -w  {1} -c 1000"
+    GetPcapcommand="tcpdump tcp -vnn -w  {0} -c 1000"
     #网卡名
     netName=cf.get("config","netName")
     #抓取主机
@@ -35,6 +35,6 @@ if __name__ == '__main__':
     i=1
     while(i):
         Logger.Log(u"执行TCPDUMP抓取%s个数据包"%str(i*1000))
-        Logger.Log(u"执行命令行:%s"%GetPcapcommand.format(netName,filePath%str(i)))
-        runTcpDump(GetPcapcommand.format(netName,filePath%str(i)))
+        Logger.Log(u"执行命令行:%s"%GetPcapcommand.format(filePath%str(i)))
+        runTcpDump(GetPcapcommand.format(filePath%str(i)))
         i+=1
