@@ -3,7 +3,7 @@
 # 用于访问MongoDB数据库的公共方法
 __author__ = 'wangjun'
 import json,cx_Oracle,struct,json,copy,traceback,os
-from STAF_Common.settings import InfoLevel
+from Common.settings import InfoLevel
 #from oracleUtil import OracleHelper
 #from mongoUtil import MongodbHelper
 class CreateGeoData:
