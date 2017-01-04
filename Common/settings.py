@@ -19,7 +19,8 @@ LogTestDBConf={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd"
 IPX_ServerDBConf={"dbname":"orcl","host":"192.168.4.131","user":"IPX_SERVER","passwd":"IPX_SERVER","port":"1521"}
 # 输出日志文件名
 #logPath = os.path.dirname(os.path.realpath(sys.path[0]))+os.sep+'logs'
-logPath = os.path.realpath(sys.path[0])+os.sep+'logs'
+logPath = os.path.dirname(os.path.realpath(sys.path[0]))+os.sep+'logs'
+
 if not os.path.exists(logPath):
     os.mkdir(logPath)
 log_file = "mining_%s.log" %time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))

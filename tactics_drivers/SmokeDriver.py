@@ -103,7 +103,8 @@ class SmokeRunner(object):
             oldToken = re.findall(r'.*access_token=(.*)&', str(temp['REQ']))[0]
             temp["REQ"] = EFR.replaceData(temp["REQ"], oldToken, newToken)
             #测试验证
-            EFR.replayHttp(temp["REQ"], eval(json.loads(temp["ACK"])), temp["TYPE"], temp["ID"])
+            tp=json.loads(json.loads(temp['ACK']))
+            EFR.replayHttp(temp["REQ"], tp, temp["TYPE"], temp["ID"])
         self._logger.Log(u"执行并验证请求完成。", InfoLevel.INFO_Level)
         #统计执行结果
         TotalCount = len(runList)
@@ -156,7 +157,6 @@ class SmokeRunner(object):
 if __name__ == '__main__':
     Logger = logger(logfilename)
     s = SmokeRunner(257, 3680, LogTestDBConf, Logger)
-    case_name = '里程桩'
-    list = s.GetExecutLogid(case_name)
+    case_name = '路口-test'
+    list = s.RunTestCase(case_name)
     print list
-
