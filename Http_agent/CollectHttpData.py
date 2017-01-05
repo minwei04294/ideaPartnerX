@@ -73,6 +73,9 @@ class CollectHttpData:
                 os.mkdir(self.targetPath)
             shutil.move(filePath,targetPath)
             self._logger.Log(u"移动Pcap文件到备份路径(targetPath)成功!!")
+    def RemoveTargetPath(self):
+        if os.path.exists(self.targetPath):
+            shutil.rmtree(self.targetPath)
     #执行解析转换
     def runAnalysis(self,filePath,filename):
         httpItems=self.getHttpDataList(filePath)

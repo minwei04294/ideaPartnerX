@@ -45,7 +45,11 @@ if __name__ == '__main__':
         msg=collect.serverMsy(host,IPX_ServerDBConf)
         if msg:
             collect.collect()
+            if i==10 :
+                Logger.Log(u"清历史目录(targetPath)!!")
+                collect.RemoveTargetPath()
+                i=1
         else:
             Logger.Log(u"采集服务端已将我退役,我已无法为您服务!!!")
         time.sleep(5)
-        #i+=1
+        i+=1
