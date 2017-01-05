@@ -34,7 +34,7 @@ class getHttpData:
             count=0
             for p in packets:
                 httpItem={"FileID":None,"HostIP":None,"HttpCode":None,"ReqData":None,"AckData":None,"ReqTime":None,"AckTime":None}
-                if 'Raw' in p and p['Raw'] and (re.findall(r'GET .*? HTTP/1.1',p['Raw'].load) or re.findall(r'POST .*? HTTP/1.1',p['Raw'].load)):
+                if 'Raw' in p and p['Raw'] and (re.findall(r'GET .*? HTTP/1.1',p['Raw'].load) or re.findall(r'POST .*? HTTP/1.1',p['Raw'].load)) and (p['Raw'].load.startswith('GET') or p['Raw'].load.startswith('POST')):
                     httpItem["FileID"] = re.findall(r'(?=soursePath/).*?(?=.pcap)',self.filePath)[0].replace("soursePath/","")
                     httpItem["HostIP"] = p['IP'].dst
                     httpItem["HttpCode"] = p['TCP'].ack
@@ -57,8 +57,10 @@ class getHttpData:
         except Exception as e:
             self._logger.Log(u"补登http数据包返回集失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
 if __name__ =="__main__":
-    file='soursePath/tcpdump.pcap'
-    http=getHttpData(file)
+    from Common.logger import logger
+    Logger = logger(logfilename)
+    file='soursePath/192_168_4_188_2017010514_eth0_35K.pcap'
+    http=getHttpData(file,Logger)
     HttpItems=http.HttpItems
     for http_Item in HttpItems:
         print '=' * 78+'='
