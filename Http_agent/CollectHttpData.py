@@ -59,7 +59,6 @@ class CollectHttpData:
         for httpItem in httpItems:
             self.DBConnect.cursor.setinputsizes(ReqData=self.DBConnect.getColbObject())
             self.DBConnect.cursor.setinputsizes(AckData=self.DBConnect.getColbObject())
-            print type(httpItem["ReqData"])
             httpItem.pop("HostIP");httpItem.pop("HttpCode");
             self.DBConnect.insertData2WithParam(insertSql,httpItem)
         self.DBConnect.commitData()
@@ -67,12 +66,11 @@ class CollectHttpData:
     def PcapFile2BackUp(self,filename):
         filePath=os.path.join(self.SoursePath,filename)
         targetPath=os.path.join(self.targetPath,filename)
-        print filePath
         if not os.path.exists(filePath):
             self._logger.Log(u"(soursePath)未找到相应Pcap文件!!")
         else:
             if not os.path.exists(self.targetPath):
-                os.mkdir(targetPath)
+                os.mkdir(self.targetPath)
             shutil.move(filePath,targetPath)
             self._logger.Log(u"移动Pcap文件到备份路径(targetPath)成功!!")
     #执行解析转换
