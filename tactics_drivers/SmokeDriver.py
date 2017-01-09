@@ -40,30 +40,40 @@ class SmokeRunner(object):
     def GetExecutLogid(self, case_name):
         logidlist = []
         try:
-            sql = "SELECT DISTINCT L.\"DESC\", L.LOG_ID FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'".format(case_name)
-            while 1:
-                #提示用户替换logid
-                logids = self.oracleObject.selectData(sql)
-                self._logger.Log(u"测试集合【%s】对应的测试数据集id如下：" % (case_name), InfoLevel.INFO_Level)
-                for logs in logids:
-                    # print logs["DESC"],logs["LOG_ID"]
-                    self._logger.Log(u"【%s】 ：【%s】 " % (logs["DESC"],logs["LOG_ID"]), InfoLevel.INFO_Level)
-                self._logger.Log(u"是否需要替换测试数据集id？ Y/N", InfoLevel.INFO_Level)
-                choose = raw_input()
-                if choose == 'Y' or choose == 'y':
-                    self._logger.Log(u"请输入正确的测试数据集id及where条件，英文逗号','隔开。多组替换条件用半角分号';'隔开", InfoLevel.INFO_Level)
-                    logidpars = raw_input().decode('gbk').encode('utf-8').split(';')
-                    # logidpars = raw_input().split(';')
-                    for pars in logidpars:
-                        params = pars.split(',')
-                        self.replacelogid(params[0], params[1])
-                elif choose == 'N' or choose == 'n' :
-                    break
+            #取消logid的显示和替换，改为执行输入logids
+            # sql = "SELECT DISTINCT L.\"DESCP\", L.LOG_ID FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'".format(case_name)
+            # while 1:
+            #     #提示用户替换logid
+            #     logids = self.oracleObject.selectData(sql)
+            #     self._logger.Log(u"测试集合【%s】对应的测试数据集id如下：" % (case_name), InfoLevel.INFO_Level)
+            #     for logs in logids:
+            #         # print logs["DESCP"],logs["LOG_ID"]
+            #         self._logger.Log(u"【%s】 ：【%s】 " % (logs["DESCP"],logs["LOG_ID"]), InfoLevel.INFO_Level)
+            #     self._logger.Log(u"是否需要替换测试数据集id？ Y/N", InfoLevel.INFO_Level)
+            #     choose = raw_input()
+            #     if choose == 'Y' or choose == 'y':
+            #         self._logger.Log(u"请输入正确的测试数据集id及where条件，英文逗号','隔开。多组替换条件用半角分号';'隔开", InfoLevel.INFO_Level)
+            #         logidpars = raw_input().decode('gbk').encode('utf-8').split(';')
+            #         # logidpars = raw_input().split(';')
+            #         for pars in logidpars:
+            #             params = pars.split(',')
+            #             self.replacelogid(params[0], params[1])
+            #     elif choose == 'N' or choose == 'n' :
+            #         break
             #筛选有效logid
+            # for logid in logids:
+            #     if not (logid["LOG_ID"] == 'error:Non find information' or logid["LOG_ID"] == '数据集ID不唯一' or logid["LOG_ID"] is None):
+            #         if logid["LOG_ID"] not in logidlist:
+            #             logidlist.append(logid["LOG_ID"])
+            self._logger.Log(u"请输入所需的测试数据集id，多个用英文逗号','隔开", InfoLevel.INFO_Level)
+            logids = raw_input().decode('gbk').encode('utf-8').replace(' ','').split(',')
             for logid in logids:
-                if not (logid["LOG_ID"] == 'error:Non find information' or logid["LOG_ID"] == '数据集ID不唯一' or logid["LOG_ID"] is None):
-                    if logid["LOG_ID"] not in logidlist:
-                        logidlist.append(logid["LOG_ID"])
+                sql = "SELECT COUNT(1) FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
+                num = self.oracleObject.selectData(sql)
+                if num == 0:
+                    self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.INFO_Level)
+                else:
+                    logidlist.append(logid)
         except Exception:
             self._logger.Log(u"执行筛选有效logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception

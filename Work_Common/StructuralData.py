@@ -499,10 +499,10 @@ class logAnalyze:
         else:NewData={}
         whereDict={};DataDict={};updateDict={}
         if 'GEOMETRY' in OldData or  'GEOMETRY' in NewData:
-            if len(OldData)==1 or len(NewData)==1:
-                UpdateSql="UPDATE %s SET GEOMETRY=%s %s WHERE %s"
-            else:
-                UpdateSql="UPDATE %s SET GEOMETRY=%s,%s WHERE %s"
+            # if len(OldData)==1 or len(NewData)==1:
+            #     UpdateSql="UPDATE %s SET GEOMETRY=%s, %s WHERE %s"
+            # else:
+            UpdateSql="UPDATE %s SET GEOMETRY=%s,%s WHERE %s"
             InsertSql="INSERT INTO %s(GEOMETRY,ROW_ID,%s) VALUES(%s,%s,%s)"
         else:
             UpdateSql="UPDATE %s SET %s WHERE %s"

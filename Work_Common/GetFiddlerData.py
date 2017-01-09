@@ -3,11 +3,11 @@
 
 __author__ = 'ZQ'
 
-from settings import *
-from logger import *
+from Common.settings import *
+from Common.logger import *
 import os, zipfile, traceback, json, re
 import xml.dom.minidom as xdm
-from oracleUtil import OracleHelper
+from Common.oracleUtil import OracleHelper
 from tactics_drivers.EditFastRegressionDriver import *
 import sys
 reload(sys)
@@ -231,15 +231,8 @@ class IniBaseData():
 
 if __name__ == "__main__":
     Logger = logger(logfilename)
-    Conn = {"dbname": "orcl", "host": "192.168.4.131", "user": "LOG_TEST", "passwd": "LOG_TEST", "port": "1521"}
-    # zip = 'D:\\fiddlerdata'
-    # unzip = 'D:\unzip'
-    # FilesPreprocess(zip, Logger).RunPreprocess(unzip)
-    # p = IniBaseData(Conn, Logger)
-    # p.SplicingAnalysisResult(unzip)
-    # p.FormatREQ()
-    filepath = 'C:\Users\ZQ\Desktop'
-    filename = '09_c.txt'
-    ac = Analysis(filepath, filename, Logger)
-    c = ac.AnalysisCfile()
-    print c
+    zipdir = 'D:\\fiddler数据'
+    unzipdir = 'D:\saz解压'
+    FilesPreprocess(zipdir, Logger).RunPreprocess(unzipdir)
+    IBD = IniBaseData(LogTestDBConf, Logger, zipdir, unzipdir)
+    IBD.SplicingAnalysisResult()
