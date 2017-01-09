@@ -30,6 +30,8 @@ if __name__ == '__main__':
     host=cf.get("config","Host")
     #线程池
     threadpool=[]
+    #定期清理历史PCAP文件数量
+    rmHisCount=cf.getint("config","rmHisCount")
     #执行抓包
     #threadpool.append(threading.Thread(target=runTcpDump,args= (GetPcapcommand)))
     #os.system(GetPcapcommand)
@@ -45,7 +47,11 @@ if __name__ == '__main__':
         msg=collect.serverMsy(host,IPX_ServerDBConf)
         if msg:
             collect.collect()
+            if i==rmHisCount :
+                Logger.Log(u"清历史目录(targetPath)!!")
+                collect.RemoveTargetPath()
+                i=1
         else:
             Logger.Log(u"采集服务端已将我退役,我已无法为您服务!!!")
         time.sleep(5)
-        #i+=1
+        i+=1

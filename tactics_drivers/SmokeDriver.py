@@ -89,10 +89,11 @@ class SmokeRunner(object):
         #构建数据
         logidlist = self.GetExecutLogid(case_name)
         # print 'logidlist is %s' % logidlist
-        for log1 in logidlist:
-            self._logger.Log(u"测试数据集id【%s】构建数据开始：" % log1, InfoLevel.INFO_Level)
-            EFR.bulidTestDataByLog(self._dbid, self._userid, log1)
-            self._logger.Log(u"测试数据集id【%s】构建数据完成。" % log1, InfoLevel.INFO_Level)
+        if logidlist:
+            for log1 in logidlist:
+                self._logger.Log(u"测试数据集id【%s】构建数据开始：" % log1, InfoLevel.INFO_Level)
+                EFR.bulidTestDataByLog(self._dbid, self._userid, log1)
+                self._logger.Log(u"测试数据集id【%s】构建数据完成。" % log1, InfoLevel.INFO_Level)
         #执行请求并验证
         self._logger.Log(u"执行并验证请求开始：", InfoLevel.INFO_Level)
         api_sql="SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,TYPE FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'"
@@ -110,10 +111,13 @@ class SmokeRunner(object):
         TotalCount = len(runList)
         SucCount, FailCount, SkipCount = self.GetResultCount(case_name)
         #回滚大区库
-        for log2 in logidlist:
-            self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据开始：" % log2, InfoLevel.INFO_Level)
-            EFR.rollbackDataByLog(self._dbid, self._userid, log2)
-            self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据完成。" % log2, InfoLevel.INFO_Level)
+        if not logidlist:
+            EFR.rollbackDataByLog(self._dbid, self._userid, '')
+        else:
+            for log2 in logidlist:
+                self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据开始：" % log2, InfoLevel.INFO_Level)
+                EFR.rollbackDataByLog(self._dbid, self._userid, log2)
+                self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据完成。" % log2, InfoLevel.INFO_Level)
 
         return TotalCount, SucCount, FailCount, SkipCount
     #执行冒烟测试

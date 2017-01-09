@@ -25,15 +25,15 @@ if __name__ == '__main__':
     netName=cf.get("config","netName")
     #抓取主机
     Host=cf.get("config","Host")
-    #当前时间
-    localTime=time.strftime('%Y%m%d')
-    #存储文件名
-    fileName=(Host.replace(".","_")+'_'+localTime+'_'+netName+"_%sK.pcap")
-
-    filePath=os.path.join(PcapfilePath,fileName)
-    #线程池
+    #执行抓包
     i=1
     while(i):
+        #当前时间
+        localTime=time.strftime('%Y%m%d%H')
+        #存储文件名
+        fileName=(Host.replace(".","_")+'_'+localTime+'_'+netName+"_%sK.pcap")
+        #绝对路径
+        filePath=os.path.join(PcapfilePath,fileName)
         Logger.Log(u"执行TCPDUMP抓取%s个数据包"%str(i*1000))
         Logger.Log(u"执行命令行:%s"%GetPcapcommand.format(filePath%str(i)))
         runTcpDump(GetPcapcommand.format(filePath%str(i)))
