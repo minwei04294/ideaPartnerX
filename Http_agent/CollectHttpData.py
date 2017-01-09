@@ -57,8 +57,17 @@ class CollectHttpData:
                   ":ReqData,:AckData,:FileID,TO_DATE(:ReqTime,'yyyy-mm-dd hh24:mi:ss')," \
                   "TO_DATE(:AckTime,'yyyy-mm-dd hh24:mi:ss'))"
         for httpItem in httpItems:
-            self.DBConnect.cursor.setinputsizes(ReqData=self.DBConnect.getColbObject())
-            self.DBConnect.cursor.setinputsizes(AckData=self.DBConnect.getColbObject())
+            #self.DBConnect.cursor.setinputsizes(ReqData=self.DBConnect.getColbObject())
+            #self.DBConnect.cursor.setinputsizes(AckData=self.DBConnect.getColbObject())
+            #定义CX_ORACLE类型对象
+            ReqData=self.DBConnect.cursor.var(self.DBConnect.getColbObject())
+            AckData=self.DBConnect.cursor.var(self.DBConnect.getColbObject())
+            #赋值
+            ReqData.setvalue(0,httpItem['ReqData'])
+            AckData.setvalue(0,httpItem['AckData'])
+            #参数值域重定义
+            httpItem['ReqData']=ReqData
+            httpItem['AckData']=AckData
             httpItem.pop("HostIP");httpItem.pop("HttpCode");
             self.DBConnect.insertData2WithParam(insertSql,httpItem)
         self.DBConnect.commitData()
