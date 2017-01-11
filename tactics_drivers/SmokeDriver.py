@@ -37,7 +37,7 @@ class SmokeRunner(object):
             self._logger.Log(u"执行替换logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
     #筛选有效logid
-    def GetExecutLogid(self, case_name):
+    def GetExecutLogid(self):
         logidlist = []
         try:
             #取消logid的显示和替换，改为执行输入logids
@@ -66,14 +66,17 @@ class SmokeRunner(object):
             #         if logid["LOG_ID"] not in logidlist:
             #             logidlist.append(logid["LOG_ID"])
             self._logger.Log(u"请输入所需的测试数据集id，多个用英文逗号','隔开", InfoLevel.INFO_Level)
-            logids = raw_input().decode('gbk').encode('utf-8').replace(' ','').split(',')
-            for logid in logids:
-                sql = "SELECT COUNT(1) FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
-                num = self.oracleObject.selectData(sql)
-                if num == 0:
-                    self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.INFO_Level)
-                else:
-                    logidlist.append(logid)
+            logids = raw_input().replace(' ','')
+            if not logids:
+                self._logger.Log(u"未输入任何测试数据集id，请再次确认！", InfoLevel.INFO_Level)
+            else:
+                for logid in logids.split(','):
+                    sql = "SELECT * FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
+                    num = self.oracleObject.selectData(sql)
+                    if not num:
+                        self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.INFO_Level)
+                    else:
+                        logidlist.append(logid)
         except Exception:
             self._logger.Log(u"执行筛选有效logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
@@ -97,7 +100,8 @@ class SmokeRunner(object):
         assert(case_name)
         EFR = EditFastRegression(LogTestDBConf, self._logger)
         #构建数据
-        logidlist = self.GetExecutLogid(case_name)
+        # logidlist = self.GetExecutLogid(case_name)
+        logidlist = self.GetExecutLogid()
         # print 'logidlist is %s' % logidlist
         if logidlist:
             for log1 in logidlist:
@@ -171,6 +175,5 @@ class SmokeRunner(object):
 if __name__ == '__main__':
     Logger = logger(logfilename)
     s = SmokeRunner(257, 3680, LogTestDBConf, Logger)
-    case_name = '路口-test'
-    list = s.RunTestCase(case_name)
+    list = s.GetExecutLogid()
     print list
