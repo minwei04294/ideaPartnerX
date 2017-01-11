@@ -155,6 +155,7 @@ class IniBaseData():
         self.unzipdir = unzipdir
 
     def SplicingAnalysisResult(self):
+        flag = 0 #是否执行后续构建的标识：1为构建，0为不构建
         inst_col = 'id,REQ,ACK,FILEID,"DATE"'
         sql_insert = "INSERT INTO FIDDLER_BASE_DATA ({0}) values (base_data_id.nextval, :2，:3，:4, :5)".format(inst_col)
         fileidExit_sql = 'SELECT * FROM fiddler_base_data l where l.fileid=\'{0}\''
@@ -165,6 +166,7 @@ class IniBaseData():
                 if fExit:
                     self._logger.Log(u"文件 %s 已存在，不执行初始化" % fileid.decode('gbk').encode('utf-8'),InfoLevel.INFO_Level)
                 else:
+                    flag = 1
                     #如果fileid不存在，则执行insert
                     filepath = self.unzipdir + '\\' + fileid + '\\raw'
                     #获取路径下文件编号list
@@ -194,6 +196,7 @@ class IniBaseData():
             self._logger.Log(u"遍历解析被解压文件异常: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
             raise Exception
         self.oracleObject.commitData()
+        return flag
 
     #格式化REQUEST请求数据
     def FormatREQ(self):
@@ -211,19 +214,20 @@ class IniBaseData():
             self._logger.Log(u"执行解压saz文件",InfoLevel.INFO_Level)
             FilesPreprocess(self.zipdir, self._logger).RunPreprocess(self.unzipdir)
             self._logger.Log(u"执行增量写入FIDDLER_BASE_DATA表",InfoLevel.INFO_Level)
-            self.SplicingAnalysisResult()
-            self._logger.Log(u"执行格式化REQUEST请求数据",InfoLevel.INFO_Level)
-            self.FormatREQ()
-            #将FIDDLER_BASE_DATA表数据写入STRATEGY_EDIT_FAST_REGRESSION表
-            ATD = analyzeTacticsData(LogTestDBConf, self._logger)
-            self._logger.Log(u"执行增量写入STRATEGY_EDIT_FAST_REGRESSION表",InfoLevel.INFO_Level)
-            ATD.getTempData()
-            self._logger.Log(u"执行中间件扩展字段赋值",InfoLevel.INFO_Level)
-            ATD.setTempTypeData()
-            self._logger.Log(u"执行中间件编辑类型赋值",InfoLevel.INFO_Level)
-            ATD.setTempNewFieldData()
-            self._logger.Log(u"执行中间件logid赋值",InfoLevel.INFO_Level)
-            ATD.setTempLogidData()
+            flag = self.SplicingAnalysisResult()
+            if flag:
+                self._logger.Log(u"执行格式化REQUEST请求数据",InfoLevel.INFO_Level)
+                self.FormatREQ()
+                #将FIDDLER_BASE_DATA表数据写入STRATEGY_EDIT_FAST_REGRESSION表
+                ATD = analyzeTacticsData(LogTestDBConf, self._logger)
+                self._logger.Log(u"执行增量写入STRATEGY_EDIT_FAST_REGRESSION表",InfoLevel.INFO_Level)
+                ATD.getTempData()
+                self._logger.Log(u"执行中间件扩展字段赋值",InfoLevel.INFO_Level)
+                ATD.setTempTypeData()
+                self._logger.Log(u"执行中间件编辑类型赋值",InfoLevel.INFO_Level)
+                ATD.setTempNewFieldData()
+                # self._logger.Log(u"执行中间件logid赋值",InfoLevel.INFO_Level)
+                # ATD.setTempLogidData()
             self._logger.Log(u"初始化fiddler数据，执行结束",InfoLevel.INFO_Level)
             self._logger.Log(u"="*60)
         except Exception:

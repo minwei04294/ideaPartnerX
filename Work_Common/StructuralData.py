@@ -663,7 +663,6 @@ class oraDataHand:
             self._logger.Log(u'执行履历数据构建失败，原因是：%s'%(traceback.format_exc(1)),InfoLevel.ERROR_Level)
             print u'执行履历数据构建失败，原因是：%s'%(traceback.format_exc(1))
             self.oracleObject.conn.rollback()
-            exit(1)
 #计算GRID坐标点
 def grid2geo(grid):
      m1 = int(grid[0:1])
