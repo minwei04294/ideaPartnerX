@@ -33,6 +33,11 @@ class InfoLevel:
     ERROR_Level   = 2
     FAILURE_Level = 3
 
+#执行冒烟测试的模式
+class SmokeMode:
+    Run_All = 0
+    Run_Feature = 1
+
 InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "UPDATE:RDLINK":u"修改RDLINK",
                   "DELETE:RDLINK":u"删除RDLINK",
