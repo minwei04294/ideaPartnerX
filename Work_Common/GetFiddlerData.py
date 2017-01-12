@@ -31,7 +31,7 @@ class FilesPreprocess():
                 elif portion[1] == '.zip':
                     continue
                 else:
-                    self._logger.Log(u"文件 %s 的后缀不是“.saz”，不执行重命名。" % filename, InfoLevel.INFO_Level)
+                    self._logger.Log(u"文件 %s 的后缀不是“.saz”，不执行重命名。" % filename.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
         except Exception:
             self._logger.Log(u"文件重命名为zip时失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
@@ -78,9 +78,10 @@ class FilesPreprocess():
         for root, dirs, files in os.walk(zipdir):
             for f in files:
                 fname = os.path.splitext(f)
-                temp_zipdir = zipdir + '\\' + f
-                temp_unzipdir = unzipdir + '\\' + fname[0]
-                self.UnzipFiles(temp_zipdir, temp_unzipdir)
+                if fname[1] == '.zip':
+                    temp_zipdir = zipdir + '\\' + f
+                    temp_unzipdir = unzipdir + '\\' + fname[0]
+                    self.UnzipFiles(temp_zipdir, temp_unzipdir)
 
 #解析C/M/S文件得到REQ与ACK
 class Analysis():
@@ -201,10 +202,47 @@ class IniBaseData():
     #格式化REQUEST请求数据
     def FormatREQ(self):
         try:
-            sql_reqformat = 'UPDATE FIDDLER_BASE_DATA l SET l.REQ=replace(replace(replace(replace(replace(replace(replace(l.REQ,\'%7B\',\'{\'),\'%7D\',\'}\'),\'%22\',\'"\'),\'%5B\',\'[\'),\'%5D\',\']\'),\'%3A\',\':\'),\'%2C\',\',\')'
+            sql_reqformat = "UPDATE FIDDLER_BASE_DATA l SET l.REQ=" \
+                            "replace(replace(replace(replace(replace(replace(replace(replace(replace(l.REQ," \
+                            "'%7B','{'),'%7D','}'),'%22','\"'),'%5B','['),'%5D',']'),'%3A',':'),'%2C',','),'%3C','<'),'%3E','>')"
             self.oracleObject.executeSQL(sql_reqformat)
         except Exception:
             self._logger.Log(u"格式化REQUEST请求数据，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+            raise Exception
+
+    #匹配接口操作对应的sql语句
+    def MergeSqlList(self):
+        import xlrd
+        from Common.jsonDiff import verifyData
+        excel_values = []
+        try:
+            try:
+                fname = os.path.realpath(self.zipdir) + os.sep + u"接口与SQL语句对照表.xlsx"
+                bk = xlrd.open_workbook(fname)
+                sh = bk.sheet_by_name(u"接口与SQL语句对照表")
+            except Exception:
+                self._logger.Log(u"查找指定excel的制定sheet页，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+                raise Exception
+            for i in range(sh.nrows-1):
+                temp = {}
+                # temp["sazname"] = sh.cell_value(i+1,0)
+                temp["param"] = sh.cell_value(i+1,1)
+                temp["sqllists"] = sh.cell_value(i+1,2)
+                excel_values.append(temp)
+            select_sql = "SELECT L.ID, TO_CHAR(L.REQ) AS REQ FROM FIDDLER_BASE_DATA L "
+            update_sql = "UPDATE FIDDLER_BASE_DATA L SET L.SQLS = :1 WHERE L.ID = :2"
+            fiddler_values = self.oracleObject.selectData(select_sql)
+            for tempReq in fiddler_values:
+                tempReqParam = json.loads(re.findall(r'.*parameter=(.*)$', str(tempReq['REQ']))[0])
+                sqls = 'Error:not found'
+                for tempExcl in excel_values:
+                    tempExclParam = json.loads(tempExcl["param"])
+                    if tempExclParam == tempReqParam:
+                        sqls = tempExcl["sqllists"]
+                self.oracleObject.changeData2WithParam(update_sql, [sqls, tempReq["ID"]])
+            self.oracleObject.commitData()
+        except Exception:
+            self._logger.Log(u"匹配接口操作对应的sql语句，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
             raise Exception
 
     def run(self):
@@ -216,6 +254,8 @@ class IniBaseData():
             self._logger.Log(u"执行增量写入FIDDLER_BASE_DATA表",InfoLevel.INFO_Level)
             flag = self.SplicingAnalysisResult()
             if flag:
+                self._logger.Log(u"执行匹配接口操作对应sql语句",InfoLevel.INFO_Level)
+                self.MergeSqlList()
                 self._logger.Log(u"执行格式化REQUEST请求数据",InfoLevel.INFO_Level)
                 self.FormatREQ()
                 #将FIDDLER_BASE_DATA表数据写入STRATEGY_EDIT_FAST_REGRESSION表
@@ -237,6 +277,6 @@ if __name__ == "__main__":
     Logger = logger(logfilename)
     zipdir = 'D:\\fiddler数据'
     unzipdir = 'D:\saz解压'
-    FilesPreprocess(zipdir, Logger).RunPreprocess(unzipdir)
+    # FilesPreprocess(zipdir, Logger).RunPreprocess(unzipdir)
     IBD = IniBaseData(LogTestDBConf, Logger, zipdir, unzipdir)
-    IBD.SplicingAnalysisResult()
+    IBD.MergeSqlList()

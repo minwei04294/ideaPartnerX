@@ -13,10 +13,11 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class SmokeRunner(object):
-    def __init__(self, dbid, userid, conn, logger):
+    def __init__(self, dbid, userid, mode, conn, logger):
         self._logger = logger
         self._dbid = dbid
         self._userid = int(userid)
+        self._mode = mode
         self.oracleObject=OracleHelper(conn, logger)
     #获取测试集合对应的请求总数
     def GetTestCase(self, case_name):
@@ -65,34 +66,49 @@ class SmokeRunner(object):
             #     if not (logid["LOG_ID"] == 'error:Non find information' or logid["LOG_ID"] == '数据集ID不唯一' or logid["LOG_ID"] is None):
             #         if logid["LOG_ID"] not in logidlist:
             #             logidlist.append(logid["LOG_ID"])
-            self._logger.Log(u"请输入所需的测试数据集id，多个用英文逗号','隔开", InfoLevel.INFO_Level)
-            logids = raw_input().replace(' ','')
-            if not logids:
-                self._logger.Log(u"未输入任何测试数据集id，请再次确认！", InfoLevel.INFO_Level)
-            else:
-                for logid in logids.split(','):
-                    sql = "SELECT * FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
-                    num = self.oracleObject.selectData(sql)
-                    if not num:
-                        self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.INFO_Level)
-                    else:
-                        logidlist.append(logid)
+            if self._mode == SmokeMode.Run_Feature:
+            #如果按要素执行，需要人为输入logids
+                self._logger.Log(u"请输入所需的测试数据集id，多个用英文逗号','隔开", InfoLevel.INFO_Level)
+                logids = raw_input().replace(' ','')
+                if not logids:
+                    self._logger.Log(u"未输入任何测试数据集id，请再次确认！", InfoLevel.INFO_Level)
+                else:
+                    for logid in logids.split(','):
+                        sql = "SELECT * FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
+                        num = self.oracleObject.selectData(sql)
+                        if not num:
+                            self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.INFO_Level)
+                        else:
+                            logidlist.append(logid)
+            elif self._mode == SmokeMode.Run_All:
+            #如果全量执行，则logids为strategy全表的logid
+                sql = "SELECT DISTINCT L.LOG_ID FROM strategy_edit_fast_regression l"
+                logids = self.oracleObject.selectData(sql)
+                for logid in logids:
+                    if not (logid["LOG_ID"] == 'error:Non find information' or logid["LOG_ID"] == '数据集ID不唯一' or logid["LOG_ID"] is None):
+                        if logid["LOG_ID"] not in logidlist:
+                            logidlist.append(logid["LOG_ID"])
         except Exception:
             self._logger.Log(u"执行筛选有效logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
         return logidlist
+
     #获取请求的执行结果
     def GetResultCount(self, case_name):
         SucCount = FailCount = SkipCount = 0
         try:
-            sql = "SELECT L.RESULT, COUNT(1) FROM strategy_edit_fast_regression l WHERE l.c_id='{0}' GROUP BY L.RESULT".format(case_name)
+            if self._mode == SmokeMode.Run_Feature:
+                sql = "SELECT L.REQ_RESULT RR, L.SQLS_RESULT SR FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'".format(case_name)
+            elif self._mode == SmokeMode.Run_All:
+                sql = "SELECT L.REQ_RESULT RR, L.SQLS_RESULT SR FROM strategy_edit_fast_regression l"
             ResultCount = self.oracleObject.selectData(sql)
             for Result in ResultCount:
-                if Result["RESULT"] == 'Pass': SucCount = Result["COUNT(1)"]
-                elif Result["RESULT"] == 'Failed': FailCount = Result["COUNT(1)"]
-                else: SkipCount = Result["COUNT(1)"]
+                if Result["RR"] == 'Pass' and Result["SR"] == 'Pass': SucCount += 1
+                elif Result["RR"] == 'Pass' and not Result["SR"] == 'Pass': FailCount +=1
+                elif Result["RR"] == 'Failed' : FailCount +=1
+                else: SkipCount +=1
         except Exception:
-            self._logger.Log(u"执行筛选有效logid失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
+            self._logger.Log(u"执行获取请求执行结果失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
         return SucCount, FailCount, SkipCount
     #执行请求
@@ -102,7 +118,6 @@ class SmokeRunner(object):
         #构建数据
         # logidlist = self.GetExecutLogid(case_name)
         logidlist = self.GetExecutLogid()
-        # print 'logidlist is %s' % logidlist
         if logidlist:
             for log1 in logidlist:
                 self._logger.Log(u"测试数据集id【%s】构建数据开始：" % log1, InfoLevel.INFO_Level)
@@ -110,7 +125,11 @@ class SmokeRunner(object):
                 self._logger.Log(u"测试数据集id【%s】构建数据完成。" % log1, InfoLevel.INFO_Level)
         #执行请求并验证
         self._logger.Log(u"执行并验证请求开始：", InfoLevel.INFO_Level)
-        api_sql="SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,TYPE FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'"
+        #获取待执行的请求
+        if self._mode == SmokeMode.Run_Feature:
+            api_sql = "SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,TYPE FROM strategy_edit_fast_regression l WHERE l.c_id='{0}'"
+        elif self._mode == SmokeMode.Run_All:
+            api_sql = "SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,TYPE FROM strategy_edit_fast_regression l"
         runList = self.oracleObject.selectData(api_sql.format(case_name))
         newToken = EFR.getUser2Token(self._userid)
         for temp in runList:
@@ -174,6 +193,6 @@ class SmokeRunner(object):
 
 if __name__ == '__main__':
     Logger = logger(logfilename)
-    s = SmokeRunner(257, 3680, LogTestDBConf, Logger)
-    list = s.GetExecutLogid()
-    print list
+    s = SmokeRunner(257, 3680, SmokeMode.Run_All, LogTestDBConf, Logger)
+    SucCount, FailCount, SkipCount =s.GetResultCount('test')
+    print SucCount, FailCount, SkipCount, SucCount+FailCount+SkipCount

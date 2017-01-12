@@ -26,8 +26,8 @@ class  analyzeTacticsData:
     #   按条件选取
     def getTempData(self):
         try:
-            targetField = "ID,REQ,ACK,C_ID,\"DATE\",STATUS"
-            sourceField = 'ID,REQ,ACK,FILEID,\"DATE\",STATUS'
+            targetField = "ID,REQ,ACK,C_ID,\"DATE\",STATUS,SQLS"
+            sourceField = 'ID,REQ,ACK,FILEID,\"DATE\",STATUS,SQLS'
             conditionString = "TO_CHAR(T.REQ) LIKE '%/service/edit/run/%' AND T.ID IN (SELECT F.ID FROM FIDDLER_BASE_DATA F MINUS SELECT S.ID FROM STRATEGY_EDIT_FAST_REGRESSION S) ORDER BY ID" #需补充条件
             sql = "INSERT INTO strategy_edit_fast_regression ({0}) SELECT {1} FROM fiddler_base_data T WHERE {2}".format(targetField, sourceField, conditionString)
             self._logger.Log(u"执行中间用例选取,执行SQL: %s" % sql, InfoLevel.INFO_Level)
@@ -52,7 +52,7 @@ class  analyzeTacticsData:
     #   设置编辑类型
     def setTempTypeData(self):
         try:
-            upateSql="UPDATE STRATEGY_EDIT_FAST_REGRESSION SET TYPE=:1,\"DESC\"=:2 WHERE ID=:3"
+            upateSql="UPDATE STRATEGY_EDIT_FAST_REGRESSION SET TYPE=:1,DESCP=:2 WHERE ID=:3"
             sql="SELECT ID,to_char(REQ) as REQ FROM STRATEGY_EDIT_FAST_REGRESSION "
             tempData=self.oracleObject.executeSQL(sql)
             for temp in tempData:
@@ -64,11 +64,11 @@ class  analyzeTacticsData:
                 TypeCode=temp['command']+":"+temp['type']
                 if TypeCode in InfoRoadEditType:
                     temp['TYPE']=TypeCode
-                    temp['DESC']=InfoRoadEditType[TypeCode]
+                    temp['DESCP']=InfoRoadEditType[TypeCode]
                 else:
                     temp['TYPE']='Unkown type'
-                    temp['DESC']='未知编辑操作0'
-                self.oracleObject.changeData2WithParam(upateSql,[temp['TYPE'],temp['DESC'],temp['ID']])
+                    temp['DESCP']='未知编辑操作0'
+                self.oracleObject.changeData2WithParam(upateSql,[temp['TYPE'],temp['DESCP'],temp['ID']])
             self.oracleObject.commitData()
         except Exception as e:
             self._logger.Log(u"执行中间用例扩展字段赋值失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
@@ -155,7 +155,7 @@ class EditFastRegression:
     #获取数据
     def getTestCaseData(self,c_id):
         try:
-            FindSql="SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,DB_ID,USER_ID,LOG_ID,TYPE,\"DESC\" FROM STRATEGY_EDIT_FAST_REGRESSION WHERE C_ID='{0}'"
+            FindSql="SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,DB_ID,USER_ID,LOG_ID,TYPE,DESCP FROM STRATEGY_EDIT_FAST_REGRESSION WHERE C_ID='{0}'"
             self.runList=self.OracleObject.executeSQL(FindSql.format(c_id))
         except Exception as e:
             self._logger.Log(u"提取中间用例失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
@@ -212,7 +212,7 @@ class EditFastRegression:
     #执行测试请求验证返回值
     def replayHttp(self,req,ack,type,id):
         from Common.jsonDiff import verifyData
-        updateSql="UPDATE STRATEGY_EDIT_FAST_REGRESSION SET RESULT=:1 WHERE ID=:2"
+        updateSql="UPDATE STRATEGY_EDIT_FAST_REGRESSION SET REQ_RESULT=:1 WHERE ID=:2"
         try:
             httpObject=urllib.urlopen(req)
             self._logger.Log(u"执行%s操作请求,URL:%s"%(type,req), InfoLevel.INFO_Level)
@@ -234,22 +234,36 @@ class EditFastRegression:
         except Exception as e:
             self._logger.Log(u"执行http请求失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
 
+    #执行测试请求对应的sqls进行数据验证
+    def VerifySqls(self, id):
+        updateSql = "UPDATE STRATEGY_EDIT_FAST_REGRESSION SET SQLS_RESULT=:1 WHERE ID=:2"
+        selectSql = "SELECT TO_CHAR(SQLS) AS SQLS FROM STRATEGY_EDIT_FAST_REGRESSION L WHERE L.ID={0}".format(id)
+        result = 1
+        try:
+            sqllist = self.OracleObject.selectData(selectSql)[0]["SQLS"].split(';')
+            for sqls in sqllist:
+                self._logger.Log(u"对操作号 %d 执行数据验证SQL:%s" % (id, sqls.decode('gbk').encode('utf-8')), InfoLevel.INFO_Level)
+                result_msg = self.OracleObjectRegion.selectData(sqls)[0]
+                self._logger.Log(u"SQL验证结果:【%s】 结果描述 【%s】" % (result_msg["VERIFY_RESULT"], result_msg["VERIFY_MESSAGE"]), InfoLevel.INFO_Level)
+                if result_msg["VERIFY_RESULT"] == 'FAIL':
+                    result = 0
+            if result == 1:
+                code = 'Pass'
+            else:
+                code = 'Failed'
+            self.OracleObject.changeData2WithParam(updateSql,[code,id])
+            self.OracleObject.commitData()
+        except Exception as e:
+            self._logger.Log(u"执行测试请求对应的sqls失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
+
     def run(self):
         pass
 
 if __name__ == '__main__':
     Logger=logger(logfilename)
-    # Conn={"dbname":"orcl","host":"192.168.4.61","user":"fm_regiondb260_test_d_208","passwd":"fm_regiondb260_test_d_208","port":"1521"}
-    # sourceField='NUMID,EXEC_URL,RESPONSE,RESP_TIME'
-    # conditionString="TO_CHAR(EXEC_URL) LIKE '%/service/edit/run/%' ORDER BY NUMID"
-    # #sql="INSERT INTO  strategy_edit_fast_regression ({0}) SELECT {1} FROM EDIT_BASE_DATA_ZQ  WHERE {2}".format(targetField,sourceField,conditionString)
-    # sql="SELECT {0} FROM EDIT_BASE_DATA_ZQ  WHERE {1}".format(sourceField,conditionString)
-    # print sql
-    # object1=OracleHelper(Conn,Logger)
-    # TacticsData=object1.executeSQL(sql)
-    # print TacticsData
-    # for Data in TacticsData:
-    #     print Data['EXEC_URL']
-
+    Conn={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
     # ATD=analyzeTacticsData(LogTestDBConf,Logger)
     # ATD.setTempLogidData()
+    EFR = EditFastRegression(Conn, Logger)
+    EFR.getDbIdConn(257)
+    EFR.VerifySqls(350762)
