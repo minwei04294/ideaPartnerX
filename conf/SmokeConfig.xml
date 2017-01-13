@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configMap>
+    <SmokeMode>Run_Feature</SmokeMode>
+	<ExecCondition>
+		<CaseList type ="RDSAMENODE">Test_gy_RD_GSC_006,Test_gy_RD_SAMENODE_014</CaseList>
+		<CaseList type ="RDTOLLGATE">Test_gy_SLOPE_001,Test_gy_SLOPE_003</CaseList>
+	</ExecCondition>
+</configMap>
