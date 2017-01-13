@@ -42,7 +42,6 @@ class getHttpData:
                     acks.update({p['TCP'].ack:tmp})
             count=0
             for p in packets:
-                p.show()
                 httpItem={"FileID":None,"HostIP":None,"HttpCode":None,"ReqData":None,"AckData":None,"ReqTime":None,"AckTime":None}
                 if 'Raw' in p and p['Raw'] and (re.findall(r'GET .*? HTTP/1.1',p['Raw'].load) or re.findall(r'POST .*? HTTP/1.1',p['Raw'].load)) and (p['Raw'].load.startswith('GET') or p['Raw'].load.startswith('POST')):
                     httpItem["FileID"] = re.findall(r'(?=soursePath/).*?(?=.pcap)',self.filePath)[0].replace("soursePath/","")
