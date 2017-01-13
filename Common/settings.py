@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*
 __author__ = 'wangjun'
 
-import sys, os
+import sys, os, re
 import time,datetime
+import xml.dom.minidom as xdm
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -33,10 +34,8 @@ class InfoLevel:
     ERROR_Level   = 2
     FAILURE_Level = 3
 
-#执行冒烟测试的模式
-class SmokeMode:
-    Run_All = 0
-    Run_Feature = 1
+#执行冒烟测试所需配置文件
+ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.realpath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
 
 InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "UPDATE:RDLINK":u"修改RDLINK",
