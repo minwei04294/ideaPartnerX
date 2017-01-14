@@ -31,7 +31,7 @@ class FilesPreprocess():
                 elif portion[1] == '.zip':
                     continue
                 else:
-                    self._logger.Log(u"文件 %s 的后缀不是“.saz”，不执行重命名。" % filename.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
+                    self._logger.Log(u"文件 %s 的后缀不是“.saz”，不执行重命名。" % filename, InfoLevel.WARNING_Level)
         except Exception:
             self._logger.Log(u"文件重命名为zip时失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
@@ -41,17 +41,17 @@ class FilesPreprocess():
         try:
             fullzipfilename = os.path.abspath(zipfilename)
             fullunzipdir = os.path.abspath(unzipdir)
-            self._logger.Log(u"开始压缩 %s 到 %s ..." % (zipfilename.decode('gbk').encode('utf-8'), unzipdir.decode('gbk').encode('utf-8')), InfoLevel.INFO_Level)
+            self._logger.Log(u"开始压缩 %s 到 %s ..." % (zipfilename, unzipdir), InfoLevel.INFO_Level)
             #Check input ...
             if not os.path.exists(fullzipfilename):
-                self._logger.Log(u"目录/文件 %s 不存在！" % fullzipfilename.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
-                raise Exception(u"目录/文件 %s 不存在！")
+                self._logger.Log(u"目录/文件 %s 不存在！" % fullzipfilename, InfoLevel.WARNING_Level)
+                raise Exception(u"目录/文件 %s 不存在！" % fullzipfilename)
                 # return
             if not os.path.exists(fullunzipdir):
                 os.mkdir(fullunzipdir)
             else:
                 if os.path.isfile(fullunzipdir):
-                    self._logger.Log(u"文件 %s 已存在，执行覆盖！" % fullunzipdir.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
+                    self._logger.Log(u"文件 %s 已存在，执行覆盖！" % fullunzipdir, InfoLevel.WARNING_Level)
                     os.remove(fullunzipdir)
             #Start extract files ...
             srcZip = zipfile.ZipFile(fullzipfilename, "r")
@@ -65,7 +65,7 @@ class FilesPreprocess():
                     fd.write(srcZip.read(eachfile))
                     fd.close()
             srcZip.close()
-            self._logger.Log(u"解压 %s 完成！" % zipfilename.decode('gbk').encode('utf-8'), InfoLevel.INFO_Level)
+            self._logger.Log(u"解压 %s 完成！" % zipfilename, InfoLevel.INFO_Level)
         except Exception:
             self._logger.Log(u"执行解压文件失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
@@ -165,7 +165,7 @@ class IniBaseData():
                 fExit = self.oracleObject.executeSQL(fileidExit_sql.format(fileid).decode('gbk').encode('utf-8'))
                 #如果fileid已存在，则不执行insert
                 if fExit:
-                    self._logger.Log(u"文件 %s 已存在，不执行初始化" % fileid.decode('gbk').encode('utf-8'),InfoLevel.INFO_Level)
+                    self._logger.Log(u"文件 %s 已存在，不执行初始化" % fileid.decode('gbk').encode('utf-8'),InfoLevel.WARNING_Level)
                 else:
                     flag = 1
                     #如果fileid不存在，则执行insert
@@ -226,9 +226,12 @@ class IniBaseData():
             for i in range(sh.nrows-1):
                 temp = {}
                 # temp["sazname"] = sh.cell_value(i+1,0)
-                temp["param"] = sh.cell_value(i+1,1)
-                temp["sqllists"] = sh.cell_value(i+1,2)
-                excel_values.append(temp)
+                if sh.cell_value(i+1,1) and sh.cell_value(i+1,2):
+                    temp["param"] = sh.cell_value(i+1,1)
+                    temp["sqllists"] = sh.cell_value(i+1,2)
+                    excel_values.append(temp)
+                else:
+                    continue
             select_sql = "SELECT L.ID, TO_CHAR(L.REQ) AS REQ FROM FIDDLER_BASE_DATA L "
             update_sql = "UPDATE FIDDLER_BASE_DATA L SET L.SQLS = :1 WHERE L.ID = :2"
             fiddler_values = self.oracleObject.selectData(select_sql)
@@ -254,10 +257,10 @@ class IniBaseData():
             self._logger.Log(u"执行增量写入FIDDLER_BASE_DATA表",InfoLevel.INFO_Level)
             flag = self.SplicingAnalysisResult()
             if flag:
-                self._logger.Log(u"执行匹配接口操作对应sql语句",InfoLevel.INFO_Level)
-                self.MergeSqlList()
                 self._logger.Log(u"执行格式化REQUEST请求数据",InfoLevel.INFO_Level)
                 self.FormatREQ()
+                self._logger.Log(u"执行匹配接口操作对应sql语句",InfoLevel.INFO_Level)
+                self.MergeSqlList()
                 #将FIDDLER_BASE_DATA表数据写入STRATEGY_EDIT_FAST_REGRESSION表
                 ATD = analyzeTacticsData(LogTestDBConf, self._logger)
                 self._logger.Log(u"执行增量写入STRATEGY_EDIT_FAST_REGRESSION表",InfoLevel.INFO_Level)

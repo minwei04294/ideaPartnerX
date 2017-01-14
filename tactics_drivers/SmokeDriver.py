@@ -49,7 +49,7 @@ class SmokeRunner(object):
                         sql = "SELECT * FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
                         num = self.oracleObject.selectData(sql)
                         if not num:
-                            self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.INFO_Level)
+                            self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.WARNING_Level)
                         else:
                             logidlist.append(logid)
             elif self._mode == 'Run_All':
@@ -79,17 +79,36 @@ class SmokeRunner(object):
             self._logger.Log(u"执行获取请求执行结果失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
         return SucCount, FailCount, SkipCount
-    #执行请求
-    def RunTestCase(self, case_name):
-        assert(case_name)
-        EFR = EditFastRegression(LogTestDBConf, self._logger)
-        #构建数据
+    #根据履历构建数据
+    def BuildingData(self):
+        self._logger.Log(u"执行冒烟测试，整体构建所有所需测试数据开始：", InfoLevel.INFO_Level)
         logidlist = self.GetExecutLogid()
+        EFR = EditFastRegression(LogTestDBConf, self._logger)
         if logidlist:
             for log1 in logidlist:
                 self._logger.Log(u"测试数据集id【%s】构建数据开始：" % log1, InfoLevel.INFO_Level)
                 EFR.bulidTestDataByLog(self._dbid, self._userid, log1)
                 self._logger.Log(u"测试数据集id【%s】构建数据完成。" % log1, InfoLevel.INFO_Level)
+        else:
+            self._logger.Log(u"测试数据集id为空，不执行构建。" , InfoLevel.WARNING_Level)
+        self._logger.Log(u"执行冒烟测试，整体构建所有所需测试数据结束。", InfoLevel.INFO_Level)
+    #根据履历回滚数据
+    def RegressionData(self):
+        self._logger.Log(u"执行冒烟测试，回滚大区库+回滚履历构建的测试数据开始：", InfoLevel.INFO_Level)
+        logidlist = self.GetExecutLogid()
+        EFR = EditFastRegression(LogTestDBConf, self._logger)
+        if not logidlist:
+            EFR.rollbackDataByLog(self._dbid, self._userid, '')
+        else:
+            for log2 in logidlist:
+                self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据开始：" % log2, InfoLevel.INFO_Level)
+                EFR.rollbackDataByLog(self._dbid, self._userid, log2)
+                self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据完成。" % log2, InfoLevel.INFO_Level)
+        self._logger.Log(u"执行冒烟测试，回滚大区库+回滚履历构建的测试数据结束。", InfoLevel.INFO_Level)
+    #执行请求
+    def RunTestCase(self, case_name):
+        assert(case_name)
+        EFR = EditFastRegression(LogTestDBConf, self._logger)
         #执行请求并验证
         self._logger.Log(u"执行并验证请求开始：", InfoLevel.INFO_Level)
         #获取待执行的请求
@@ -110,23 +129,12 @@ class SmokeRunner(object):
         #统计执行结果
         TotalCount = len(runList)
         SucCount, FailCount, SkipCount = self.GetResultCount(case_name)
-        #回滚大区库
-        if not logidlist:
-            EFR.rollbackDataByLog(self._dbid, self._userid, '')
-        else:
-            for log2 in logidlist:
-                self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据开始：" % log2, InfoLevel.INFO_Level)
-                EFR.rollbackDataByLog(self._dbid, self._userid, log2)
-                self._logger.Log(u"测试数据集id【%s】回滚大区库数据+回滚构建数据完成。" % log2, InfoLevel.INFO_Level)
-
         return TotalCount, SucCount, FailCount, SkipCount
     #获取冒烟测试待执行的caselist
     def GetCaseLists(self):
         caselist = []
         if self._mode == 'Run_Feature':
-            conffile = re.sub('tactics_drivers','',os.path.realpath(sys.path[0]))+'conf'+os.sep+'SystemConfig.xml'
-            dom = xdm.parse(conffile).documentElement
-            itemlist = dom.getElementsByTagName('CaseList')
+            itemlist = ConfFilename.getElementsByTagName('CaseList')
             for item in itemlist:
                 caselist.append(item.getAttribute("type"))
         elif self._mode =='Run_All':
@@ -161,19 +169,23 @@ class SmokeRunner(object):
             if not execCaseList:
                 self._logger.Log(u"待执行的测试要素，均不符合执行条件，请核对后重新执行！", InfoLevel.ERROR_Level)
             else:
+                #根据履历构建数据
+                self.BuildingData()
                 for testCase in execCaseList:
                     # 执行测试要素
                     self._logger.Log(u"测试要素【%s】执行开始：" % testCase, InfoLevel.INFO_Level)
                     try:
                         iTotalApiCount, iSucApiCount, iFailApiCount, iSkipApiCount = self.RunTestCase(testCase)
                     except Exception:
-                        self._logger.Log(u"执行测试要素失败：%s" % traceback.format_exc(), InfoLevel.INFO_Level)
+                        self._logger.Log(u"执行测试要素失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
                     self._logger.Log(u"测试要素【%s】执行结束，需要执行【%d】个接口请求，其中成功：【%d】，失败：【%d】，未执行：【%d】"
                                      %(testCase, iTotalApiCount, iSucApiCount, iFailApiCount, iSkipApiCount), InfoLevel.INFO_Level)
                     if iFailApiCount > 0 or iSkipApiCount > 0 :
                         fail_case_count += 1
                     elif iSucApiCount > 0 :
                         suc_case_count += 1
+                #根据履历回滚数据
+                self.RegressionData()
         self._logger.Log(u"冒烟测试执行结束，共有【%d】个测试要素，执行了【%d】个测试要素，其中成功:【%d】，失败:【%d】，未找到:【%d】"
                         %(total_case_count, total_case_count-skip_case_count, suc_case_count, fail_case_count, skip_case_count), InfoLevel.INFO_Level)
         self._logger.Log(u"="*60)

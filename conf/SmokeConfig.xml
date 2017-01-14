@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configMap>
+	<!--大区库id-->
+	<dbid>257</dbid>
+	<!--作业员用户id-->
+	<userid>3680</userid>
+	<!--saz文件及sql语句excel文件的本地存放路径-->
+	<zipdir>D:\fiddler数据</zipdir>
+	<!--执行冒烟测试的模式：按要素执行=Run_Feature；全部执行=Run_All-->
     <SmokeMode>Run_Feature</SmokeMode>
+	<!--执行时所需的要素及履历数据集id-->
 	<ExecCondition>
-		<CaseList type ="RDSAMENODE">Test_gy_RD_GSC_006,Test_gy_RD_SAMENODE_014</CaseList>
-		<CaseList type ="RDTOLLGATE">Test_gy_SLOPE_001,Test_gy_SLOPE_003</CaseList>
+		<CaseList type ="RDLINK">data_set_id_1,data_set_id_2</CaseList>
+		<CaseList type ="RWLINK">data_set_id_3,data_set_id_4</CaseList>
 	</ExecCondition>
 </configMap>

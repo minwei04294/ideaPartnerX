@@ -35,7 +35,8 @@ class InfoLevel:
     FAILURE_Level = 3
 
 #执行冒烟测试所需配置文件
-ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.realpath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
+#ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.abspath(sys.path[0]))+os.sep+'conf'+os.sep+'SmokeConfig.xml').documentElement
+ConfFilename =  xdm.parse(re.sub('runSmoke.exe','',os.path.abspath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
 
 InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "UPDATE:RDLINK":u"修改RDLINK",
