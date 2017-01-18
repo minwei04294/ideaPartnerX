@@ -217,7 +217,7 @@ class EditFastRegression:
             httpObject=urllib.urlopen(req)
             self._logger.Log(u"执行%s操作请求,URL:%s"%(type,req), InfoLevel.INFO_Level)
             responeValue=httpObject.read()
-            self._logger.Log(u"执行%s操作请求返回值,URL:%s"%(type,responeValue), InfoLevel.INFO_Level)
+            self._logger.Log(u"执行%s操作请求的实际返回值,URL:%s"%(type,responeValue), InfoLevel.INFO_Level)
             respone=json.loads(responeValue)
             if type.startswith('CREATE:'):
                 respone=replaceIntForDict(respone)
@@ -239,10 +239,12 @@ class EditFastRegression:
         updateSql = "UPDATE STRATEGY_EDIT_FAST_REGRESSION SET SQLS_RESULT=:1 WHERE ID=:2"
         selectSql = "SELECT TO_CHAR(SQLS) AS SQLS FROM STRATEGY_EDIT_FAST_REGRESSION L WHERE L.ID={0}".format(id)
         result = 1
+        dbid = ConfFilename.getElementsByTagName('dbid')[0].firstChild.data
+        self.getDbIdConn(dbid)
         try:
             sqllist = self.OracleObject.selectData(selectSql)[0]["SQLS"].split(';')
             for sqls in sqllist:
-                self._logger.Log(u"对操作号 %d 执行数据验证SQL:%s" % (id, sqls.decode('gbk').encode('utf-8')), InfoLevel.INFO_Level)
+                self._logger.Log(u"对操作号 %d 执行数据验证SQL:%s" % (id, sqls), InfoLevel.INFO_Level)
                 result_msg = self.OracleObjectRegion.selectData(sqls)[0]
                 self._logger.Log(u"SQL验证结果:【%s】 结果描述 【%s】" % (result_msg["VERIFY_RESULT"], result_msg["VERIFY_MESSAGE"]), InfoLevel.INFO_Level)
                 if result_msg["VERIFY_RESULT"] == 'FAIL':
@@ -262,8 +264,10 @@ class EditFastRegression:
 if __name__ == '__main__':
     Logger=logger(logfilename)
     Conn={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
-    # ATD=analyzeTacticsData(LogTestDBConf,Logger)
-    # ATD.setTempLogidData()
-    EFR = EditFastRegression(Conn, Logger)
-    EFR.getDbIdConn(257)
-    EFR.VerifySqls(350762)
+    ATD=analyzeTacticsData(LogTestDBConf,Logger)
+    ATD.setTempNewFieldData()
+    ATD.setTempTypeData()
+    ATD.setTempLogidData()
+    # EFR = EditFastRegression(Conn, Logger)
+    # EFR.getDbIdConn(257)
+    # EFR.VerifySqls(350762)
