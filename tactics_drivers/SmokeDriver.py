@@ -22,7 +22,7 @@ class SmokeRunner(object):
     #获取测试要素对应的请求总数
     def GetTestCase(self, case_name):
         try:
-            sql = "SELECT COUNT(1) FROM (SELECT L.ID, REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS TYPE FROM STRATEGY_EDIT_FAST_REGRESSION L) T WHERE T.TYPE = '{0}'".format(case_name)
+            sql = "SELECT COUNT(1) FROM (SELECT L.ID, REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS FT FROM STRATEGY_EDIT_FAST_REGRESSION L) T WHERE T.FT = '{0}'".format(case_name)
             case_count = self.oracleObject.selectData(sql)
         except Exception:
             self._logger.Log(u"执行获取测试要素对应的请求总数失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
@@ -44,14 +44,15 @@ class SmokeRunner(object):
             if self._mode == 'Run_Feature':
                 itemlist = ConfFilename.getElementsByTagName('CaseList')
                 for item in itemlist:
-                    logids = item.firstChild.data.split(',')
-                    for logid in logids:
-                        sql = "SELECT * FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
-                        num = self.oracleObject.selectData(sql)
-                        if not num:
-                            self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.WARNING_Level)
-                        else:
-                            logidlist.append(logid)
+                    if item.firstChild:
+                        logids = item.firstChild.data.split(',')
+                        for logid in logids:
+                            sql = "SELECT * FROM LOG_DETAIL L WHERE L.DATA_SET_ID = '{0}'".format(logid)
+                            num = self.oracleObject.selectData(sql)
+                            if not num:
+                                self._logger.Log(u"测试数据集id【%s】未找到，请再次确认！" % logid, InfoLevel.WARNING_Level)
+                            else:
+                                logidlist.append(logid)
             elif self._mode == 'Run_All':
                 sql = "SELECT DISTINCT L.LOG_ID FROM STRATEGY_EDIT_FAST_REGRESSION l"
                 logids = self.oracleObject.selectData(sql)
@@ -68,7 +69,7 @@ class SmokeRunner(object):
     def GetResultCount(self, case_name):
         SucCount = FailCount = SkipCount = 0
         try:
-            sql = "SELECT * FROM (SELECT L.REQ_RESULT RR, L.SQLS_RESULT SR, REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS TYPE FROM STRATEGY_EDIT_FAST_REGRESSION L) T WHERE T.TYPE = '{0}'".format(case_name)
+            sql = "SELECT * FROM (SELECT L.REQ_RESULT RR, L.SQLS_RESULT SR, REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS FT FROM STRATEGY_EDIT_FAST_REGRESSION L) T WHERE T.FT = '{0}'".format(case_name)
             ResultCount = self.oracleObject.selectData(sql)
             for Result in ResultCount:
                 if Result["RR"] == 'Pass' and Result["SR"] == 'Pass': SucCount += 1
@@ -112,15 +113,15 @@ class SmokeRunner(object):
         #执行请求并验证
         self._logger.Log(u"执行并验证请求开始：", InfoLevel.INFO_Level)
         #获取待执行的请求
-        api_sql = "SELECT * FROM (SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK, REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS TYPE FROM STRATEGY_EDIT_FAST_REGRESSION L) T WHERE T.TYPE = '{0}'"
+        api_sql = "SELECT * FROM (SELECT ID, REQ, ACK, TYPE, REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS FT FROM STRATEGY_EDIT_FAST_REGRESSION L) T WHERE T.FT = '{0}'"
         runList = self.oracleObject.selectData(api_sql.format(case_name))
         newToken = EFR.getUser2Token(self._userid)
         for temp in runList:
             #替换token
-            oldToken = re.findall(r'.*access_token=(.*)&', str(temp['REQ']))[0]
-            temp["REQ"] = EFR.replaceData(temp["REQ"], oldToken, newToken)
+            oldToken = re.findall(r'.*access_token=(.*)&', str(temp['REQ'].read()))[0]
+            temp["REQ"] = EFR.replaceData(temp["REQ"].read(), oldToken, newToken)
             #测试验证
-            tp=json.loads(json.loads(temp['ACK']))
+            tp=json.loads(temp['ACK'].read())
             #验证请求
             EFR.replayHttp(temp["REQ"], tp, temp["TYPE"], temp["ID"])
             #验证sql
@@ -138,10 +139,10 @@ class SmokeRunner(object):
             for item in itemlist:
                 caselist.append(item.getAttribute("type"))
         elif self._mode =='Run_All':
-            sql = "SELECT DISTINCT REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS TYPE FROM STRATEGY_EDIT_FAST_REGRESSION L"
+            sql = "SELECT DISTINCT REPLACE(REGEXP_SUBSTR(L.TYPE, ':[[:upper:]]*'), ':', '') AS FT FROM STRATEGY_EDIT_FAST_REGRESSION L"
             templist = self.oracleObject.selectData(sql)
             for temp in templist:
-                caselist.append(temp["TYPE"])
+                caselist.append(temp["FT"])
         return caselist
 
     #执行冒烟测试
@@ -192,6 +193,5 @@ class SmokeRunner(object):
 
 if __name__ == '__main__':
     Logger = logger(logfilename)
-    s = SmokeRunner(257, 3680, LogTestDBConf, Logger)
-    list =s.GetExecutLogid()
-    print list
+    s = SmokeRunner(265, 4311, LogTestDBConf, Logger)
+    s.run()

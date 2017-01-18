@@ -126,7 +126,8 @@ class Analysis():
                 lines = ft.readlines()
                 for t in lines:
                     if re.findall(r"\{\"errmsg+.*",t):
-                        response["response"] = json.dumps(re.findall(r"\{\"errmsg+.*",t)[0],sort_keys=True,ensure_ascii=False)
+                        # response["response"] = json.dumps(re.findall(r"\{\"errmsg+.*",t)[0],sort_keys=True,ensure_ascii=False)
+                        response["response"] = re.findall(r"\{\"errmsg+.*",t)[0]
         except Exception:
             self._logger.Log(u"解析S文件失败：%s" % traceback.format_exc(), InfoLevel.ERROR_Level)
             raise Exception
@@ -213,7 +214,6 @@ class IniBaseData():
     #匹配接口操作对应的sql语句
     def MergeSqlList(self):
         import xlrd
-        from Common.jsonDiff import verifyData
         excel_values = []
         try:
             try:
