@@ -31,6 +31,15 @@ class getHttpData:
             #获取数据包时间戳集合
             httpTimeList=GetPcapTimeList(self.filePath,self._logger).packet_data
             if not httpTimeList:raise ValueError("获取数据包时间戳集合失败")
+            #记录TCP应答数据报文
+            acks={}
+            for p in packets:
+                if 'Raw' in p and not (p['Raw'] and (re.findall(r'GET .*? HTTP/1.1',p['Raw'].load) or re.findall(r'POST .*? HTTP/1.1',p['Raw'].load)) and (p['Raw'].load.startswith('GET') or p['Raw'].load.startswith('POST'))):
+                    if p['TCP'].ack in acks:
+                        tmp=acks[p['TCP'].ack]+'\r\n'+p['Raw'].load
+                    else:
+                        tmp=p['Raw'].load
+                    acks.update({p['TCP'].ack:tmp})
             count=0
             for p in packets:
                 httpItem={"FileID":None,"HostIP":None,"HttpCode":None,"ReqData":None,"AckData":None,"ReqTime":None,"AckTime":None}
@@ -38,7 +47,14 @@ class getHttpData:
                     httpItem["FileID"] = re.findall(r'(?=soursePath/).*?(?=.pcap)',self.filePath)[0].replace("soursePath/","")
                     httpItem["HostIP"] = p['IP'].dst
                     httpItem["HttpCode"] = p['TCP'].ack
-                    httpItem["ReqData"] = p['Raw'].load
+                    if re.findall(r'POST .*? HTTP/1.1',p['Raw'].load) and not re.findall(r'parameter',p['Raw'].load)  and p['Raw'].load.startswith('POST'):
+                        if p['TCP'].ack in acks:
+                            tmp2="\r\n"+acks[p['TCP'].ack]
+                        else:
+                            tmp2=''
+                        httpItem["ReqData"] = p['Raw'].load+tmp2
+                    else:
+                        httpItem["ReqData"] = p['Raw'].load
                     httpItem["AckTime"] = httpTimeList[count][str(count+1)]["GMTtime"]
                     # httpItem["ReqTime"] = p['Raw'].load
                     self.HttpItems.append(httpItem)
@@ -59,7 +75,7 @@ class getHttpData:
 if __name__ =="__main__":
     from Common.logger import logger
     Logger = logger(logfilename)
-    file='soursePath/192_168_4_188_2017010514_eth0_35K.pcap'
+    file='soursePath/192_168_4_188_2017011312_eth0_10467K.pcap'
     http=getHttpData(file,Logger)
     HttpItems=http.HttpItems
     for http_Item in HttpItems:
