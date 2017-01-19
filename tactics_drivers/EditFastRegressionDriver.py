@@ -8,7 +8,7 @@ import traceback,re,json,sys,urllib
 from Common.oracleUtil import OracleHelper
 from Common.logger import logger
 from Common.settings import *
-from Common.public import replaceIntForDict
+from Common.public import replaceAddPidForDict
 from Work_Common.StructuralData import logDataManage
 from Work_Common.accessToken import AccessToken
 
@@ -219,12 +219,16 @@ class EditFastRegression:
             responeValue=httpObject.read()
             self._logger.Log(u"执行%s操作请求的实际返回值,URL:%s"%(type,responeValue), InfoLevel.INFO_Level)
             respone=json.loads(responeValue)
-            if type.startswith('CREATE:'):
-                respone=replaceIntForDict(respone)
-                ack=replaceIntForDict(ack)
-                result=verifyData(ack,respone)
-            else:
-                result=verifyData(ack,respone)
+            # if type.startswith('CREATE:'):
+            #     respone=replaceIntForDict(respone)
+            #     ack=replaceIntForDict(ack)
+            #     result=verifyData(ack,respone)
+            # else:
+            #     result=verifyData(ack,respone)
+            #仅将op=新增的pid替换，其他不替换
+            respone = replaceAddPidForDict(respone)
+            ack = replaceAddPidForDict(ack)
+            result = verifyData(ack, respone)
             if len(result)==0:
                 code='Pass'
             else:

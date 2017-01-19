@@ -5,7 +5,7 @@ __author__ = 'ZQ'
 
 from Common.settings import *
 from Common.logger import *
-import os, zipfile, traceback, json, re
+import os, zipfile, traceback, json, re, urllib
 import xml.dom.minidom as xdm
 from Common.oracleUtil import OracleHelper
 from tactics_drivers.EditFastRegressionDriver import *
@@ -101,9 +101,10 @@ class Analysis():
                     #     content["request"] = str(t).replace('GET ', '').replace(' HTTP/1.1', '').replace('\n', '')
                     if t.find("parameter=") >= 0:
                         if t.startswith("GET "):
-                            content["request"] = str(t).replace('GET ', '').replace(' HTTP/1.1', '').replace('\n', '')
+                            temp= str(t).replace('GET ', '').replace(' HTTP/1.1', '').replace('\n', '')
+                            content["request"] = urllib.unquote(temp)
                         elif t.startswith("parameter="):
-                            parm1 = str(t).replace('\n', '')
+                            parm1 = urllib.unquote(str(t).replace('\n', ''))
                             parm2 = ''
                             for p in lines:
                                 if p.find("POST ") >= 0:
@@ -200,17 +201,6 @@ class IniBaseData():
         self.oracleObject.commitData()
         return flag
 
-    #格式化REQUEST请求数据
-    def FormatREQ(self):
-        try:
-            sql_reqformat = "UPDATE FIDDLER_BASE_DATA l SET l.REQ=" \
-                            "replace(replace(replace(replace(replace(replace(replace(replace(replace(l.REQ," \
-                            "'%7B','{'),'%7D','}'),'%22','\"'),'%5B','['),'%5D',']'),'%3A',':'),'%2C',','),'%3C','<'),'%3E','>')"
-            self.oracleObject.executeSQL(sql_reqformat)
-        except Exception:
-            self._logger.Log(u"格式化REQUEST请求数据，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
-            raise Exception
-
     #匹配接口操作对应的sql语句
     def MergeSqlList(self):
         import xlrd
@@ -227,8 +217,8 @@ class IniBaseData():
                 temp = {}
                 # temp["sazname"] = sh.cell_value(i+1,0)
                 if sh.cell_value(i+1,1) and sh.cell_value(i+1,2):
-                    temp["param"] = sh.cell_value(i+1,1)
-                    temp["sqllists"] = sh.cell_value(i+1,2)
+                    temp["param"] = sh.cell_value(i+1,1).replace('\n','')
+                    temp["sqllists"] = sh.cell_value(i+1,2).replace('\n','').replace(' ','')
                     excel_values.append(temp)
                 else:
                     continue
@@ -257,8 +247,6 @@ class IniBaseData():
             self._logger.Log(u"执行增量写入FIDDLER_BASE_DATA表",InfoLevel.INFO_Level)
             flag = self.SplicingAnalysisResult()
             if flag:
-                self._logger.Log(u"执行格式化REQUEST请求数据",InfoLevel.INFO_Level)
-                self.FormatREQ()
                 self._logger.Log(u"执行匹配接口操作对应sql语句",InfoLevel.INFO_Level)
                 self.MergeSqlList()
                 #将FIDDLER_BASE_DATA表数据写入STRATEGY_EDIT_FAST_REGRESSION表
@@ -275,11 +263,3 @@ class IniBaseData():
             self._logger.Log(u"="*60)
         except Exception:
             self._logger.Log(u"初始化fiddler数据，执行异常: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
-
-if __name__ == "__main__":
-    Logger = logger(logfilename)
-    zipdir = 'D:\\fiddler数据'
-    unzipdir = 'D:\saz解压'
-    # FilesPreprocess(zipdir, Logger).RunPreprocess(unzipdir)
-    IBD = IniBaseData(LogTestDBConf, Logger, zipdir, unzipdir)
-    IBD.MergeSqlList()
