@@ -3,14 +3,6 @@
 # 用于数据挖掘的公共方法
 __author__ = 'wangjun'
 
-# {"errmsg":"success",
-#  "data":{
-#      "log":
-#          [{"type":"RDLINK","pid":510000579,"childPid":"","op":"淇敼"},
-#           {"type":"RDGSCLINK","pid":407000006,"childPid":"","op":"淇敼"}],
-#      "check":[],
-#      "pid":510000579},"errcode":0}
-
 def replaceIntForDict(dictObject):
     for key in dictObject:
         if isinstance(dictObject[key], int):
@@ -33,20 +25,30 @@ def replaceIntForList(listObject):
         count += 1
     return listObject
 
-# a={"errmsg":None,"data":{"log":[{"type":"RDNODE","pid":502000731,"childPid":"","op":"新增"},{"type":"RDNODE","pid":501000744,"childPid":"","op":"新增"},{"type":"RDLINK","pid":505000935,"childPid":"","op":"新增"},{"type":"RDLANE","pid":420000366,"childPid":"","op":"新增"},{"type":"RDLANE","pid":508000359,"childPid":"","op":"新增"}],"check":[],"pid":505000935},"errcode":-1}
-# b = {"errmsg":"查询的PID为：420000859的RD_LINK不存在","data":None,"errcode":-1}
-#
+def replaceAddPidForDict(dictObject):
+    for key in dictObject:
+        if key == 'data' and isinstance(dictObject[key], dict):
+            dictObject[key]['pid'] = 0
+        if key == 'op' and dictObject[key] == u"新增":
+            replaceIntForDict(dictObject)
+        elif isinstance(dictObject[key], dict):
+            replaceAddPidForDict(dictObject[key])
+        elif isinstance(dictObject[key], list):
+            replaceAddPidForList(dictObject[key])
+    return dictObject
+
+def replaceAddPidForList(listObject):
+    count = 0
+    for item in listObject:
+        if isinstance(item, dict):
+            listObject[count] = replaceAddPidForDict(listObject[count])
+        elif isinstance(item, list):
+            listObject[count] = replaceAddPidForList(listObject[count])
+        count += 1
+    return listObject
+
 # if __name__ == '__main__':
-#     from oracleUtil import OracleHelper
-#     from logger import logger
-#     from settings import *
-#     import json
-#     Logger = logger(logfilename)
-#     conn = {"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
-#     oracleObject = OracleHelper(conn, Logger)
-#     api_sql="SELECT ID,TO_CHAR(REQ) AS REQ,TO_CHAR(ACK) AS ACK,TYPE FROM strategy_edit_fast_regression l WHERE l.c_id='test'"
-#     runList = oracleObject.executeSQL(api_sql)
-#     for temp in runList:
-#         temp1 = eval(json.loads(temp["ACK"]))
-#         p=replaceIntForDict(temp1)
-#         print p
+#     a = {"errmsg":None,"data":{"log":[{"type":"RDNODE","pid":502000731,"childPid":502000731,"op":u"新增"},{"type":"RDNODE","pid":501000744,"childPid":501000744,"op":u"修改"},{"type":"RDLINK","pid":505000935,"childPid":505000935,"op":u"删除"},{"type":"RDLANE","pid":420000366,"childPid":"","op":u"新增"},{"type":"RDLANE","pid":508000359,"childPid":"","op":u"新增"}],"check":[],"pid":505000935},"errcode":-1}
+#     b = {"errmsg":u"查询的PID为：420000859的RD_LINK不存在","data":None,"errcode":-1}
+#     c = {"errmsg":"success","data":{"result":{u"删除link删除信号灯":[{"objType":"RDTRAFFICSIGNAL","pid":505000022,"status":"DELETE"}],u"删除link删除详细车道":[{"objType":"RDLANE","pid":409000349,"status":"DELETE"},{"objType":"RDLANE","pid":405000336,"status":"DELETE"}],u"删除Link":[{"objType":"RDLINK","pid":406000864,"status":"DELETE"}],u"删除Node":[{"objType":"RDNODE","pid":404000622,"status":"DELETE"}]},"log":[],"check":[],"pid":0},"errcode":999}
+#     print replaceAddPidForDict(a)
