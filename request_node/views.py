@@ -5,9 +5,10 @@ from Common.commonUtil import getParamFromRequest
 from Common.response import sucResponse
 from Work_Common.accessToken import AccessToken
 from Common.logger import logger
+from Common.settings import *
 
 def testStart(request):
-    Logger=logger()
+    Logger=logger(logPath+os.sep+'IdeaParterServerLog')
     tokenObj=AccessToken()
     TokenCode=getParamFromRequest(request,'accessToken')
     Token=tokenObj.Token2UserID(TokenCode)
@@ -15,7 +16,7 @@ def testStart(request):
     queryResult=[]
     return sucResponse(queryResult)
 def testStop(request):
-    Logger=logger()
+    Logger=logger(logPath+os.sep+'IdeaParterServerLog')
     tokenObj=AccessToken()
     TokenCode=getParamFromRequest(request,'accessToken')
     Token=tokenObj.Token2UserID(TokenCode)

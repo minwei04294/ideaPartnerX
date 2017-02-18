@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'AtdpX.wsgi.application'
+WSGI_APPLICATION = 'IdeaPartnerXServer.wsgi.application'
 
 
 # Database
