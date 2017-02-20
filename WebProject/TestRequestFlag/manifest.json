@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "css": ["css/RequestFlag.css"],
-      "js": ["script/RequestFlag.js","script/SystemConfig.js"],
+      "js": ["script/RequestFlag.js","script/SystemConfig.js","script/lib/jquery1.11.1/jquery-1.11.1.js"],
       // 在什么情况下使用该脚本
       "matches": [
         "http://*/*",
