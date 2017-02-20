@@ -1,0 +1,15 @@
+#Main_dev{
+    margin-top: 10%;
+    width: 300px;
+    height: 300px;
+    border-radius: 5px;
+    background-color: #444444;
+}
+#TestOptName{
+    width: 40%;
+    background-color: lavender;
+}
+#TestOptDesc{
+    height: 40%;
+    background-color: lavender;
+}
