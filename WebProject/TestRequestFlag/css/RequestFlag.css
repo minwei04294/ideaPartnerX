@@ -1,15 +1,15 @@
-#Main_dev{
+#Main_div{
     margin-top: 10%;
     width: 300px;
-    height: 300px;
+    height: 200px;
     border-radius: 5px;
     background-color: #444444;
 }
 #TestOptName{
-    width: 40%;
+    width: 90%;
     background-color: lavender;
 }
 #TestOptDesc{
-    height: 40%;
+    height: 50%;
     background-color: lavender;
 }

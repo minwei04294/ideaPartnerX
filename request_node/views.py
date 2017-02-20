@@ -10,7 +10,7 @@ from Common.settings import *
 def testStart(request):
     Logger=logger(logPath+os.sep+'IdeaParterServerLog')
     tokenObj=AccessToken()
-    TokenCode=getParamFromRequest(request,'accessToken')
+    TokenCode=getParamFromRequest(request,'access_token')
     Token=tokenObj.Token2UserID(TokenCode)
     Logger.Log(u"开始执行测试打点:用户ID:%s"%Token)
     queryResult=[]
@@ -18,7 +18,7 @@ def testStart(request):
 def testStop(request):
     Logger=logger(logPath+os.sep+'IdeaParterServerLog')
     tokenObj=AccessToken()
-    TokenCode=getParamFromRequest(request,'accessToken')
+    TokenCode=getParamFromRequest(request,'access_token')
     Token=tokenObj.Token2UserID(TokenCode)
     Logger.Log(u"结束执行测试打点:用户ID:%s"%Token)
     queryResult=[]
