@@ -2,15 +2,26 @@
  * Created by wangjun on 17/2/20.
  */
 //var UrlHeader="http://127.0.0.1:8000"
+if (getCookie('TestOptName'))
+    $("#TestOptName").val(getCookie('TestOptName'));
+if (getCookie('TestOptDesc'))
+    $("#TestOptDesc").val(getCookie('TestOptDesc'));
+
 $("#startButton").click(function(){
     start();
 })
 $("#stopButton").click(function(){
     stop();
 })
+
 function start() {
-    if (getCookie("HttpFlag") == "ed" || getCookie("HttpFlag") == null) {
-        try {
+    if (getCookie("HttpFlag") == "ing" ) {
+
+        alert("亲!!已经执行开始操作了!!")
+    }
+    else
+        {
+             try {
             $.support.cors = true;
             $.ajax({
                 type: "GET",
@@ -30,18 +41,27 @@ function start() {
                     alert("偶哦!!出错了!!,请联系管理员吧!!")
                 }
             });
+            setCookie('TestOptName',$("#TestOptName").val(),1);
+            setCookie('TestOptDesc',$("#TestOptDesc").val(),1);
             setCookie('HttpFlag', 'ing', 1);
         } catch (e) {
             alert(e);
-        }
-    }
-    else
-        {
-            alert("亲!!已经执行开始操作了!!")
+            }
         }
 }
 
 function stop(){
+
+        if ($("#TestOptName").val()){
+            OptNameValue=$("#TestOptName").val()
+        }
+        else
+            OptNameValue=getCookie('TestOptName');
+        if($("#TestOptDesc").val()){
+            OptDescValue=$("#TestOptDesc").val()
+        }
+        else
+            OptDescValue=getCookie('TestOptDesc');
         if (getCookie("HttpFlag")=="ing"){
             $.support.cors=true;
             $.ajax({
@@ -49,8 +69,8 @@ function stop(){
                 url: UrlHeader + "/IdeaPartnerXServer/request_node/testStop/",
                 data: {
                     access_token: TokenValue,
-                    OptName: $("#TestOptName").val(),
-                    OptDesc: $("#TestOptDesc").val()
+                    OptName: OptNameValue,
+                    OptDesc: OptDescValue
                 },
                 async: false,
                 cache: false,
@@ -62,6 +82,8 @@ function stop(){
                     alert("偶哦!!出错了!!,请联系管理员吧!!")
                 }
             });
+            clearCookie('TestOptName');
+            clearCookie('TestOptDesc');
             clearCookie('HttpFlag');
         }
         else
