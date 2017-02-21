@@ -6,7 +6,8 @@
   // 简单描述
   "description": "进行前端Web界面操作时,完成对想要记录的API请求进行登记标记的功能",
   "icons": {
-    "16": "image/16.png"
+    "16": "image/16.png",
+    "48":"image/16.png"
   },
   // 选择默认语言
   "default_locale": "en",
