@@ -6,7 +6,11 @@ if (getCookie('TestOptName'))
     $("#TestOptName").val(getCookie('TestOptName'));
 if (getCookie('TestOptDesc'))
     $("#TestOptDesc").val(getCookie('TestOptDesc'));
-
+// if (getCookieToken()){
+//     TokenValue=getCookieToken()
+// }
+// else
+//     alert("未检测到你的浏览器中存在用户票据信息，你登录编辑平台了么！！");
 $("#startButton").click(function(){
     start();
 })
@@ -104,9 +108,11 @@ function getCookie(c_name){
 function clearCookie(c_name){
     setCookie(c_name,"",-1)
 }
-//function getCookieToken(){
-//    var token=""
-//    var cookieList=""+document.cookie.split(";")
+//
+// function getCookieToken(){
+//     var token=""
+//     document.cookie="name=value;domain=192.168.4.130";
+//     var cookieList=""+document.cookie.split(";")
 //    for(var i=0;i<cookieList.length;i++){
 //        alert(cookieList[i])
 //        if(cookieList[i].substring(0,12)=="FM-app-USER-"){
@@ -121,6 +127,6 @@ function clearCookie(c_name){
 //            //return '00000193IZGEHZ03EC7EF15252EEF2256E27F0E90339B99C';
 //        return '';
 //    }
-//}
+// }
 
 
