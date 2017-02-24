@@ -201,7 +201,7 @@ class IniBaseData():
         self.oracleObject.commitData()
         return flag
 
-    #匹配接口操作对应的sql语句
+    #匹配接口操作对应的sql语句和数据履历构建ID
     def MergeSqlList(self):
         import xlrd
         excel_values = []
@@ -218,21 +218,24 @@ class IniBaseData():
                 # temp["sazname"] = sh.cell_value(i+1,0)
                 if sh.cell_value(i+1,1) and sh.cell_value(i+1,2):
                     temp["param"] = sh.cell_value(i+1,1).replace('\n','')
-                    temp["sqllists"] = sh.cell_value(i+1,2).replace('\n','').replace(' ','')
+                    temp["sqllists"] = sh.cell_value(i+1,2).replace('\n','')
+                    temp["logid"] = sh.cell_value(i+1,3).replace('\n','')
                     excel_values.append(temp)
                 else:
                     continue
             select_sql = "SELECT L.ID, TO_CHAR(L.REQ) AS REQ FROM FIDDLER_BASE_DATA L "
-            update_sql = "UPDATE FIDDLER_BASE_DATA L SET L.SQLS = :1 WHERE L.ID = :2"
+            update_sql = "UPDATE FIDDLER_BASE_DATA L SET L.SQLS = :1,L.LOG_ID = :2 WHERE L.ID = :3"
             fiddler_values = self.oracleObject.selectData(select_sql)
             for tempReq in fiddler_values:
                 tempReqParam = json.loads(re.findall(r'.*parameter=(.*)$', str(tempReq['REQ']))[0])
                 sqls = 'Error:not found'
+                logid = ''
                 for tempExcl in excel_values:
                     tempExclParam = json.loads(tempExcl["param"])
                     if tempExclParam == tempReqParam:
                         sqls = tempExcl["sqllists"]
-                self.oracleObject.changeData2WithParam(update_sql, [sqls, tempReq["ID"]])
+                        logid = tempExcl["logid"]
+                self.oracleObject.changeData2WithParam(update_sql, [sqls, logid, tempReq["ID"]])
             self.oracleObject.commitData()
         except Exception:
             self._logger.Log(u"匹配接口操作对应的sql语句，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)

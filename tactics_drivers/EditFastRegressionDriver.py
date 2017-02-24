@@ -26,8 +26,8 @@ class  analyzeTacticsData:
     #   按条件选取
     def getTempData(self):
         try:
-            targetField = "ID,REQ,ACK,C_ID,\"DATE\",STATUS,SQLS"
-            sourceField = 'ID,REQ,ACK,FILEID,\"DATE\",STATUS,SQLS'
+            targetField = "ID,REQ,ACK,C_ID,\"DATE\",STATUS,SQLS,LOG_ID"
+            sourceField = 'ID,REQ,ACK,FILEID,\"DATE\",STATUS,SQLS,LOG_ID'
             conditionString = "TO_CHAR(T.REQ) LIKE '%/service/edit/run/%' AND T.ID IN (SELECT F.ID FROM FIDDLER_BASE_DATA F MINUS SELECT S.ID FROM STRATEGY_EDIT_FAST_REGRESSION S) ORDER BY ID" #需补充条件
             sql = "INSERT INTO strategy_edit_fast_regression ({0}) SELECT {1} FROM fiddler_base_data T WHERE {2}".format(targetField, sourceField, conditionString)
             self._logger.Log(u"执行中间用例选取,执行SQL: %s" % sql, InfoLevel.INFO_Level)
