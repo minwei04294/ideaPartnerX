@@ -36,11 +36,13 @@ class InfoLevel:
     FAILURE_Level = 3
 
 #执行冒烟测试所需配置文件
-#ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.abspath(sys.path[0]))+os.sep+'conf'+os.sep+'SmokeConfig.xml').documentElement
-try:
-    ConfFilename =  xdm.parse(re.sub('runSmoke.exe','',os.path.abspath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
-except Exception as e:
-    print e
+
+ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.abspath(sys.path[0]))+os.sep+'conf'+os.sep+'SmokeConfig.xml').documentElement
+#try:
+#    ConfFilename =  xdm.parse(re.sub('runSmoke.exe','',os.path.abspath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
+#except Exception as e:
+#    print e
+
 InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "UPDATE:RDLINK":u"修改RDLINK",
                   "DELETE:RDLINK":u"删除RDLINK",
@@ -82,6 +84,7 @@ InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "DELETE:ADNODE":u"删除行政区划点",
                   "MOVE:ADNODE":u"移动行政区划点",
                   "CREATE:ADFACE":u"创建行政区划面",
+                  "UPDATE:ADFACE":u"修改行政区划面",
                   "DELETE:ADFACE":u"删除行政区划面",
                   "CREATE:ADADMIN":u"创建行政区划代表点",
                   "UPDATE:ADADMIN":u"修改行政区划代表点",
@@ -111,6 +114,7 @@ InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "DELETE:ZONENODE":u"删除ZONE点",
                   "MOVE:ZONENODE":u"移动ZONE点",
                   "CREATE:ZONEFACE":u"创建ZONE面",
+                  "UPDATE:ZONEFACE":u"修改ZONE面",
                   "DELETE:ZONEFACE":u"删除ZONE面",
                   "CREATE:LULINK":u"创建土地利用线",
                   "UPDATE:LULINK":u"修改土地利用线",
@@ -122,6 +126,7 @@ InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "DELETE:LUNODE":u"删除土地利用点",
                   "MOVE:LUNODE":u"移动土地利用点",
                   "CREATE:LUFACE":u"创建土地利用面",
+                  "UPDATE:LUFACE":u"修改土地利用面",
                   "DELETE:LUFACE":u"删除土地利用面",
                   "CREATE:RDTRAFFICSIGNAL":u"创建交通信号灯",
                   "UPDATE:RDTRAFFICSIGNAL":u"修改交通信号灯",
@@ -157,6 +162,7 @@ InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "DELETE:LCNODE":u"删除土地覆盖点",
                   "MOVE:LCNODE":u"移动土地覆盖点",
                   "CREATE:LCFACE":u"创建土地覆盖面",
+                  "UPDATE:LCFACE":u"修改土地覆盖面",
                   "DELETE:LCFACE":u"删除土地覆盖面",
                   "CREATE:RDSPEEDBUMP":u"创建减速带",
                   "UPDATE:RDSPEEDBUMP":u"修改减速带",

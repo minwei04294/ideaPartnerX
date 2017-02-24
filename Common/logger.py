@@ -6,7 +6,8 @@ import os, sys
 import logging, time
 from settings import  InfoLevel
 
-class logger(logging.Handler):
+# class logger(logging.Handler):
+class logger(object):
     def __init__(self, logfilename, tester=None):
         super(logger, self).__init__()
         logging.basicConfig(level = logging.DEBUG, \
