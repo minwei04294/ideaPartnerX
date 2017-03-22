@@ -10,10 +10,10 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 #一体化服务系统库
-FM_Man_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_man_test_315","passwd":"fm_man_test","port":"1521"}
+FM_Man_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_man_test_315","passwd":"fm_man_test_315","port":"1521"}
 
 #一体化服务sys系统数据
-FM_Sys_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_sys_test_315","passwd":"fm_sys_test","port":"1521"}
+FM_Sys_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_sys_test_315","passwd":"fm_sys_test_315","port":"1521"}
 
 # 道路履历库信息
 LogTestDBConf={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
@@ -37,11 +37,11 @@ class InfoLevel:
 
 #执行冒烟测试所需配置文件
 
-ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.abspath(sys.path[0]))+os.sep+'conf'+os.sep+'SmokeConfig.xml').documentElement
-#try:
-#    ConfFilename =  xdm.parse(re.sub('runSmoke.exe','',os.path.abspath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
-#except Exception as e:
-#    print e
+# ConfFilename =  xdm.parse(re.sub('tactics_drivers','',os.path.abspath(sys.path[0]))+os.sep+'conf'+os.sep+'SmokeConfig.xml').documentElement
+try:
+   ConfFilename =  xdm.parse(re.sub('runSmoke.exe','',os.path.abspath(sys.path[0]))+'conf'+os.sep+'SmokeConfig.xml').documentElement
+except Exception as e:
+   print e
 
 InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "UPDATE:RDLINK":u"修改RDLINK",
