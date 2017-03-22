@@ -206,37 +206,39 @@ class IniBaseData():
         import xlrd
         excel_values = []
         try:
-            try:
-                fname = os.path.realpath(self.zipdir) + os.sep + u"接口与SQL语句对照表.xlsx"
-                bk = xlrd.open_workbook(fname)
-                sh = bk.sheet_by_name(u"接口与SQL语句对照表")
-            except Exception:
-                self._logger.Log(u"查找指定excel的制定sheet页，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
-                raise Exception
-            for i in range(sh.nrows-1):
-                temp = {}
-                # temp["sazname"] = sh.cell_value(i+1,0)
-                if sh.cell_value(i+1,1) and sh.cell_value(i+1,2):
-                    temp["param"] = sh.cell_value(i+1,1).replace('\n','')
-                    temp["sqllists"] = sh.cell_value(i+1,2).replace('\n','')
-                    temp["logid"] = sh.cell_value(i+1,3).replace('\n','')
-                    excel_values.append(temp)
-                else:
-                    continue
-            select_sql = "SELECT L.ID, TO_CHAR(L.REQ) AS REQ FROM FIDDLER_BASE_DATA L "
-            update_sql = "UPDATE FIDDLER_BASE_DATA L SET L.SQLS = :1,L.LOG_ID = :2 WHERE L.ID = :3"
-            fiddler_values = self.oracleObject.selectData(select_sql)
-            for tempReq in fiddler_values:
-                tempReqParam = json.loads(re.findall(r'.*parameter=(.*)$', str(tempReq['REQ']))[0])
-                sqls = 'Error:not found'
-                logid = ''
-                for tempExcl in excel_values:
-                    tempExclParam = json.loads(tempExcl["param"])
-                    if tempExclParam == tempReqParam:
-                        sqls = tempExcl["sqllists"]
-                        logid = tempExcl["logid"]
-                self.oracleObject.changeData2WithParam(update_sql, [sqls, logid, tempReq["ID"]])
-            self.oracleObject.commitData()
+            fname = os.path.realpath(self.zipdir) + os.sep + u"接口与SQL语句对照表.xlsx"
+            if os.path.exists(fname):
+                try:
+                    fname = os.path.realpath(self.zipdir) + os.sep + u"接口与SQL语句对照表.xlsx"
+                    bk = xlrd.open_workbook(fname)
+                    sh = bk.sheet_by_name(u"接口与SQL语句对照表")
+                except Exception:
+                    self._logger.Log(u"查找指定excel的制定sheet页，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
+                    raise Exception
+                for i in range(sh.nrows-1):
+                    temp = {}
+                    # temp["sazname"] = sh.cell_value(i+1,0)
+                    if sh.cell_value(i+1,1) and sh.cell_value(i+1,2):
+                        temp["param"] = sh.cell_value(i+1,1).replace('\n','')
+                        temp["sqllists"] = sh.cell_value(i+1,2).replace('\n','')
+                        temp["logid"] = sh.cell_value(i+1,3).replace('\n','')
+                        excel_values.append(temp)
+                    else:
+                        continue
+                select_sql = "SELECT L.ID, TO_CHAR(L.REQ) AS REQ FROM FIDDLER_BASE_DATA L "
+                update_sql = "UPDATE FIDDLER_BASE_DATA L SET L.SQLS = :1,L.LOG_ID = :2 WHERE L.ID = :3"
+                fiddler_values = self.oracleObject.selectData(select_sql)
+                for tempReq in fiddler_values:
+                    tempReqParam = json.loads(re.findall(r'.*parameter=(.*)$', str(tempReq['REQ']))[0])
+                    sqls = 'Error:not found'
+                    logid = ''
+                    for tempExcl in excel_values:
+                        tempExclParam = json.loads(tempExcl["param"])
+                        if tempExclParam == tempReqParam:
+                            sqls = tempExcl["sqllists"]
+                            logid = tempExcl["logid"]
+                    self.oracleObject.changeData2WithParam(update_sql, [sqls, logid, tempReq["ID"]])
+                self.oracleObject.commitData()
         except Exception:
             self._logger.Log(u"匹配接口操作对应的sql语句，执行失败: %s" % traceback.format_exc(),InfoLevel.ERROR_Level)
             raise Exception

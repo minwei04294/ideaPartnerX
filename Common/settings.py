@@ -10,10 +10,10 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 #一体化服务系统库
-FM_Man_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_man_test","passwd":"fm_man_test","port":"1521"}
+FM_Man_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_man_test_315","passwd":"fm_man_test","port":"1521"}
 
 #一体化服务sys系统数据
-FM_Sys_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_sys_test","passwd":"fm_sys_test","port":"1521"}
+FM_Sys_Conf={"dbname":"orcl","host":"192.168.4.131","user":"fm_sys_test_315","passwd":"fm_sys_test","port":"1521"}
 
 # 道路履历库信息
 LogTestDBConf={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
@@ -205,4 +205,9 @@ InfoRoadEditType={"CREATE:RDLINK":u"创建RDLINK",
                   "DELETE:RDMILEAGEPILE":u"删除里程桩",
                   "CREATE:RDTMCLOCATION":u"创建TMC匹配",
                   "UPDATE:RDTMCLOCATION":u"修改TMC匹配",
-                  "DELETE:RDTMCLOCATION":u"删除TMC匹配"}
+                  "DELETE:RDTMCLOCATION":u"删除TMC匹配",
+                   "CREATE:IXPOI":u"创建POI",
+                  "UPDATE:IXPOI":u"修改POI",
+                  "DELETE:IXPOI":u"删除POI",
+                  "CREATE:IXPOIPARENT":u"创建POI父子关系",
+                  "DELETE:IXPOIPARENT":u"删除POI父子关系"}

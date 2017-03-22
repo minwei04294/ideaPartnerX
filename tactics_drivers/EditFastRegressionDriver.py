@@ -29,9 +29,12 @@ class  analyzeTacticsData:
             targetField = "ID,REQ,ACK,C_ID,\"DATE\",STATUS,SQLS,LOG_ID"
             sourceField = 'ID,REQ,ACK,FILEID,\"DATE\",STATUS,SQLS,LOG_ID'
             conditionString = "TO_CHAR(T.REQ) LIKE '%/service/edit/run/%' AND T.ID IN (SELECT F.ID FROM FIDDLER_BASE_DATA F MINUS SELECT S.ID FROM STRATEGY_EDIT_FAST_REGRESSION S) ORDER BY ID" #需补充条件
+            conditionString2 = "TO_CHAR(T.REQ) LIKE '%/service/editrow/run/%' AND T.ID IN (SELECT F.ID FROM FIDDLER_BASE_DATA F MINUS SELECT S.ID FROM STRATEGY_EDIT_FAST_REGRESSION S) ORDER BY ID"  # 需补充条件
             sql = "INSERT INTO strategy_edit_fast_regression ({0}) SELECT {1} FROM fiddler_base_data T WHERE {2}".format(targetField, sourceField, conditionString)
+            sql2 = "INSERT INTO strategy_edit_fast_regression ({0}) SELECT {1} FROM fiddler_base_data T WHERE {2}".format(targetField, sourceField, conditionString2)
             self._logger.Log(u"执行中间用例选取,执行SQL: %s" % sql, InfoLevel.INFO_Level)
             self.oracleObject.executeSQL(sql)
+            self.oracleObject.executeSQL(sql2)
         except Exception as e:
             self._logger.Log(u"执行中间用例选取失败：%s" %traceback.format_exc(), InfoLevel.ERROR_Level)
     #   扩展字段赋值
@@ -269,9 +272,9 @@ if __name__ == '__main__':
     Logger=logger(logfilename)
     Conn={"dbname":"orcl","host":"192.168.4.131","user":"LOG_TEST","passwd":"LOG_TEST","port":"1521"}
     ATD=analyzeTacticsData(LogTestDBConf,Logger)
-    ATD.setTempNewFieldData()
-    ATD.setTempTypeData()
-    ATD.setTempLogidData()
+    #ATD.setTempNewFieldData()
+    #ATD.setTempTypeData()
+    #ATD.setTempLogidData()
     # EFR = EditFastRegression(Conn, Logger)
     # EFR.getDbIdConn(257)
     # EFR.VerifySqls(350762)
