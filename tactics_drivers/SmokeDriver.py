@@ -124,8 +124,8 @@ class SmokeRunner(object):
             tp=json.loads(temp['ACK'].read())
             #验证请求
             EFR.replayHttp(temp["REQ"], tp, temp["TYPE"], temp["ID"])
-            #验证sql
-            EFR.VerifySqls(temp["ID"])
+            #验证sql--闫鑫权确认取消
+            #EFR.VerifySqls(temp["ID"])
         self._logger.Log(u"执行并验证请求完成。", InfoLevel.INFO_Level)
         #统计执行结果
         TotalCount = len(runList)

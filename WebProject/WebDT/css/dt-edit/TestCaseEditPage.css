@@ -1,0 +1,60 @@
+#naviBox{
+    margin-top: 2%;
+    margin-left: 1.2%;
+    height: 50px;
+    width: 95.5%;
+    background-color:#444444;
+    border-radius: 5px;
+}
+#editInBox{
+    border-radius: 5px;
+    margin-top: 1%;
+    margin-left: 1.2%;
+    height: 100%;
+    width: 95.5%;
+    white-space:nowrap;
+    overflow:auto;
+    background-color:#444444;
+}
+#treeBox{
+    border-radius: 5px;
+    height: 750px;
+    width: 20%;
+    overflow:auto;
+    resize: horizontal;
+    white-space:nowrap;
+    background-color: #444444;
+    /*float: left;*/
+    /*position: absolute;*/
+}
+#editFormsBox{
+    border-radius: 5px;
+    margin-top: 2%;
+    margin-left: 5%;
+    height: 750px;
+    width: 60%;
+    white-space:nowrap;
+    overflow:auto;
+    background-color:#444444;
+    /*float: right;*/
+}
+#bottomBox{
+    margin-top: 1%;
+    margin-left: 2%;
+    height: 50px;
+    width: 94%;
+    background-color:#444444;
+    border-radius: 5px;
+}
+.col-xs-12,.container-fluid{
+    background-color: #adadad;
+}
+.editManBox{
+    overflow:auto;
+}
+label{
+
+}
+/*.SameRowBox1{*/
+    /*display: inherit;*/
+/*}*/
