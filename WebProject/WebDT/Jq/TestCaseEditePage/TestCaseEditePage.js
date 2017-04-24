@@ -146,18 +146,18 @@ $.format = function (source, params) {
         var dataNodeName='proj-suite-case-D'
         var nodeHtml='<ul class="{0}">{1}</ul>';
         var m_ProjectNodeHtml ='<li class="proj{0}">'+
-                '<input type="checkbox" class="proj{0}-{0}" /><a class="proj{0}-{0}">{1}</a>'+
+                '<input type="checkbox" class="proj{0}-{0}" /><a class="proj{0}-{0} text-success">{1}</a>'+
                 '{2}'+
             '</li>';
         var m_SuiteNodeHtml='<li class="proj{0}-s{1}">'+
-                        '<input type="checkbox" class="proj{0}-s{1}-{1}" /><a class="proj{0}-s{1}-{1}">{2}</a>'+
+                        '<input type="checkbox" class="proj{0}-s{1}-{1}" /><a class="proj{0}-s{1}-{1} text-success">{2}</a>'+
                             '{3}'+
                     '</li>';
         var m_CaseNodeHtml= '<li class="proj{0}-s{1}-c{2}">'+
-                                '<input type="checkbox" class="proj{0}-s{1}-c{2}-{2}" /><a class="proj{0}-s{1}-c{2}-{2}">{3}</a>'+
+                                '<input type="checkbox" class="proj{0}-s{1}-c{2}-{2}" /><a class="proj{0}-s{1}-c{2}-{2} text-success">{3}</a>'+
                                 '{4}'+
                             '</li>'
-        var m_CaseDataHtml='<li class="proj{0}-s{1}-c{2}-d{3}"><input type="checkbox" class="proj{0}-s{1}-c{2}-d{3}-{3}" /><a class="proj{0}-s{1}-c{2}-d{3}-{3}">{4}</a></li>'
+        var m_CaseDataHtml='<li class="proj{0}-s{1}-c{2}-d{3}"><input type="checkbox" class="proj{0}-s{1}-c{2}-d{3}-{3}" /><a class="proj{0}-s{1}-c{2}-d{3}-{3} text-success">{4}</a></li>'
         var m_treeHtml='';
         //属性的获取与设置方法
         this.m_Projects=function () {
@@ -824,4 +824,29 @@ $().ready(function () {
     var treeObject=$("#treeBox");
     //console.log(projectsTreeHtmlObject.m_treeHtml());
     treeObject.html(projectsTreeHtmlObject.m_treeHtml());
+  $("ul>li> a").click(function(){
+         $(this).parent().siblings().removeClass('selected');
+         $(this).parent('li').addClass('selected');
+      return false;
+  });
+  $("a").dblclick(function() {
+    var a = $(this);
+    var txt = a.text();
+    var input = $("<input type='text' value='" + txt + "'/>");
+    a.html(input);
+    input.click(function() { return false; });
+    //获取焦点
+    input.trigger("focus");
+    //文本框失去焦点后提交内容，重新变为文本
+    input.blur(function() {
+    var newtxt = $(this).val();
+    //判断文本有没有修改
+    if (newtxt != txt) {
+    a.html(newtxt);}
+    else{
+        a.html(txt)
+    }
+            })
+        }
+    )
 })

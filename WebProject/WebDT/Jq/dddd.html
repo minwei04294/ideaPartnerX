@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+<script src="../js/jquery1.11.1/jquery.min.js"></script>
+<script>
+$().ready(function(){
+  $(".level1 > a").click(function(){
+    $(this).addClass("blue").next().show().parent().siblings().children("a").removeClass("blue").next().hide();
+      return false;
+  });
+  $("a").dblclick(function() {
+    var a = $(this);
+    var txt = a.text();
+    var input = $("<input type='text' value='" + txt + "'/>");
+    a.html(input);
+    input.click(function() { return false; });
+    //获取焦点
+    input.trigger("focus");
+    //文本框失去焦点后提交内容，重新变为文本
+    input.blur(function() {
+    var newtxt = $(this).val();
+    //判断文本有没有修改
+    if (newtxt != txt) {
+    a.html(newtxt);}
+    else{
+        a.html(txt)
+    }
+            })
+        }
+    )
+})
+</script>
+<style type="text/css">
+.blue
+{
+   color:blue;
+}
+</style>
+</head>
+<body>
+<div class="box">
+    <ul class="menu">
+        <li class="level">
+        <input type="checkbox" class="1" /><a href="#none">衬衫</a>
+            <ul class="level-2">
+                <li><input type="checkbox" class="level2-1" /><a class="level2-1">长袖</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">长袖</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">跨栏</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">吊打</a></li>
+            </ul>
+        </li>
+        <li class="level1">
+        <input type="checkbox" class="1" /><a href="#none">卫衣</a>
+            <ul class="level2">
+                <li><input type="checkbox" class="2" /><a href="#none">1</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">2</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">3</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">4</a></li>
+            </ul>
+        </li>
+        <li class="level1">
+        <input type="checkbox" class="1" /><a href="#none">裤子</a>
+            <ul class="level2">
+                <li><input type="checkbox" class="2" /><a href="#none">a</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">b</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">b</a></li>
+                <li><input type="checkbox" class="2" /><a href="#none">d</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
     margin-left: 1.2%;
     height: 50px;
     width: 95.5%;
-    background-color:#444444;
+    background-color:#999999;
     border-radius: 5px;
 }
 #editInBox{
@@ -14,7 +14,7 @@
     width: 95.5%;
     white-space:nowrap;
     overflow:auto;
-    background-color:#444444;
+    background-color:#999999;
 }
 #treeBox{
     border-radius: 5px;
@@ -23,7 +23,7 @@
     overflow:auto;
     resize: horizontal;
     white-space:nowrap;
-    background-color: #444444;
+    background-color: #999999;
     /*float: left;*/
     /*position: absolute;*/
 }
@@ -35,7 +35,7 @@
     width: 60%;
     white-space:nowrap;
     overflow:auto;
-    background-color:#444444;
+    background-color:#999999;
     /*float: right;*/
 }
 #bottomBox{
@@ -43,18 +43,60 @@
     margin-left: 2%;
     height: 50px;
     width: 94%;
-    background-color:#444444;
+    background-color:#999999;
     border-radius: 5px;
 }
+#stepBox{
+    overflow:auto;
+    height: 300px;
+}
+#stepTheadBox{
+    overflow:auto;
+}
 .col-xs-12,.container-fluid{
-    background-color: #adadad;
+    background-color: #cccccc;
 }
 .editManBox{
     overflow:auto;
 }
-label{
-
+.TableTitle{
+    /*border: 1px dashed #FFFFFF*/
+    background-color: #cccccc;
 }
+input,a,.form-control{
+    color: #3c763d;
+    font-weight: bold;
+}
+.blue
+{
+   color:blue;
+}
+
+/*ul>li{*/
+
+/*}*/
+/*ul>li>a{*/
+    /*color: black;*/
+/*}*/
+
+/*ul>li> *{*/
+    /*display: none;*/
+/*}*/
+/*ul>li:first-child>*{*/
+    /*display: inline;*/
+/*}*/
+
+/*ul>li.selected{*/
+
+/*}*/
+/*ul>li.selected >a{*/
+    /*color:blue;*/
+/*}*/
+
+/*ul>li.selected > * {*/
+    /*display: inline;*/
+/*}*/
+
 /*.SameRowBox1{*/
     /*display: inherit;*/
 /*}*/

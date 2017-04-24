@@ -6,15 +6,15 @@
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="../css/dt-edit/TestCaseEditPage.css">
-    <script src="../js/jquery1.11.1/jquery.min.js"></script>
-    <script src="../js/bootstrap.js"></script>
-    <script src="../Jq/TestCaseEditePage/TestCaseEditePage.js"></script>
+    <script type="application/javascript" src="../js/jquery1.11.1/jquery.min.js"></script>
+    <script type="application/javascript" src="../js/bootstrap.js"></script>
+    <script type="application/javascript" src="../Jq/TestCaseEditePage/TestCaseEditePage.js"></script>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row clearfix">
         <div class="col-xs-12 column" id="naviBox">
-            <h2 class="text-center text-info">测试场景编辑</h2>
+            <h2 class="text-center text-success">测试场景编辑</h2>
         </div>
         <div class="row clearfix" >
             <div class="col-xs-12 column" id="editManBox">
@@ -27,26 +27,26 @@
                                 <div class="col-xs-6 column" >
                                     <form role="form">
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">测试用例名称</label><input type="text" class="form-control" id="exampleInputEmail1" />
+                                             <label class="text-success" for="editFormsBox">测试用例名称</label><input type="text" class="form-control" id="exampleInputEmail1" />
                                         </div>
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">测试用例描述</label><input type="text" class="form-control" id="exampleInputPassword1" />
+                                             <label class="text-success" for="editFormsBox">测试用例描述</label><input type="text" class="form-control" id="exampleInputPassword1" />
                                         </div>
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">所属产品</label>
-                                                <select class="form-control text-info">
-                                                    <option class="text-info" value ="道路">道路</option>
-                                                    <option class="text-info" value ="POI">POI</option>
+                                             <label class="text-success" for="editFormsBox">所属产品</label>
+                                                <select class="form-control text-success">
+                                                    <option class="text-success" value ="道路">道路</option>
+                                                    <option class="text-success" value ="POI">POI</option>
                                                 </select>
                                         </div>
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">测试驱动</label>
-                                                <select class="form-control text-info">
-                                                    <option class="text-info" value ="AndroidUITestDriver">AndroidUITestDriver</option>
-                                                    <option class="text-info" value ="InterFaceTestDriver">InterFaceTestDriver</option>
-                                                    <option class="text-info" value ="WebUITestDriver">WebUITestDriver</option>
-                                                    <option class="text-info" value ="ScriptTestDriver">ScriptTestDriver</option>
-                                                    <option class="text-info" value ="RoadCheckTestDriver">RoadCheckTestDriver</option>
+                                             <label class="text-success" for="editFormsBox">测试驱动</label>
+                                                <select class="form-control text-success">
+                                                    <option class="text-success" value ="AndroidUITestDriver">AndroidUITestDriver</option>
+                                                    <option class="text-success" value ="InterFaceTestDriver">InterFaceTestDriver</option>
+                                                    <option class="text-success" value ="WebUITestDriver">WebUITestDriver</option>
+                                                    <option class="text-success" value ="ScriptTestDriver">ScriptTestDriver</option>
+                                                    <option class="text-success" value ="RoadCheckTestDriver">RoadCheckTestDriver</option>
                                                 </select>
                                         </div>
                                     </form>
@@ -54,121 +54,545 @@
                                 <div class="col-xs-6 column" >
                                     <form role="form">
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">测试用例ID</label><input type="text" class="form-control" id="exampleInputEmail31" />
+                                             <label class="text-success" for="editFormsBox">测试用例ID</label><input type="text" class="form-control" id="exampleInputEmail31" />
                                         </div>
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">相关需求</label><input type="text" class="form-control" id="exampleInputPassword13" />
+                                             <label class="text-success" for="editFormsBox">相关需求</label><input type="text" class="form-control" id="exampleInputPassword13" />
                                         </div>
                                         <div class="form-group">
-                                             <label class="text-info" for="editFormsBox">所属平台</label>
-                                                <select class="form-control text-info">
-                                                    <option class="text-info" value ="道路日遍">道路日遍</option>
-                                                    <option class="text-info" value ="POI日遍">POI日遍</option>
-                                                    <option class="text-info" value ="道路月遍">道路月遍</option>
-                                                    <option class="text-info" value ="POI月遍">POI月遍</option>
+                                             <label class="text-success" for="editFormsBox">所属平台</label>
+                                                <select class="form-control text-success">
+                                                    <option class="text-success" value ="道路日遍">道路日遍</option>
+                                                    <option class="text-success" value ="POI日遍">POI日遍</option>
+                                                    <option class="text-success" value ="道路月遍">道路月遍</option>
+                                                    <option class="text-success" value ="POI月遍">POI月遍</option>
                                                 </select>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                             <div class="row clearfix" style="border-radius: 5px;border: 1px dashed #FFFFFF; overflow: auto;margin-top: 1%">
-                                <div class="col-md-2 column " >
-                                    <h6 class="text-info text-center ">
-                                        测试用例步骤场景设计.
-                                    </h6>
+                                <div class="row clearfix" style="margin-top: 0.5%">
+                                    <div class="col-md-1 column"></div>
+                                    <div class="col-md-11 column" id="stepTheadBox">
+                                         <div class="row clearfix" >
+                                             <div class="col-md-1 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                     全选<input type="checkbox">
+                                                </h6>
+                                             </div>
+                                             <div class="col-md-1 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                    序号
+                                                </h6>
+                                             </div>
+                                             <div class="col-md-2 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                    测试步骤说明
+                                                </h6>
+                                             </div>
+                                             <div class="col-md-2 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                    测试指令
+                                                </h6>
+                                             </div>
+                                             <div class="col-md-2 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                    输入参数
+                                                </h6>
+                                             </div>
+                                             <div class="col-md-2 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                    返回内容
+                                                </h6>
+                                             </div>
+                                             <div class="col-md-2 column TableTitle">
+                                                 <h6 class="text-success text-center ">
+                                                    关联BUG
+                                                </h6>
+                                             </div>
+                                         </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-10 column" >
-                                    <table class="table">
-                                        <thead>
-                                            <tr class="text-info">
-                                                <th>
-                                                    编号
-                                                </th>
-                                                <th>
-                                                    产品
-                                                </th>
-                                                <th>
-                                                    交付时间
-                                                </th>
-                                                <th>
-                                                    状态
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="text-info">
-                                                <td>
-                                                    1
-                                                </td>
-                                                <td>
-                                                    TB - Monthly
-                                                </td>
-                                                <td>
-                                                    01/04/2012
-                                                </td>
-                                                <td>
-                                                    Default
-                                                </td>
-                                            </tr>
-                                            <tr class="text-info">
-                                                <td>
-                                                    1
-                                                </td>
-                                                <td>
-                                                    TB - Monthly
-                                                </td>
-                                                <td>
-                                                    01/04/2012
-                                                </td>
-                                                <td>
-                                                    Approved
-                                                </td>
-                                            </tr>
-                                            <tr class="text-info">
-                                                <td>
-                                                    2
-                                                </td>
-                                                <td>
-                                                    TB - Monthly
-                                                </td>
-                                                <td>
-                                                    02/04/2012
-                                                </td>
-                                                <td>
-                                                    Declined
-                                                </td>
-                                            </tr>
-                                            <tr class="text-info">
-                                                <td>
-                                                    3
-                                                </td>
-                                                <td>
-                                                    TB - Monthly
-                                                </td>
-                                                <td>
-                                                    03/04/2012
-                                                </td>
-                                                <td>
-                                                    Pending
-                                                </td>
-                                            </tr>
-                                            <tr class="text-info">
-                                                <td>
-                                                    4
-                                                </td>
-                                                <td>
-                                                    TB - Monthly
-                                                </td>
-                                                <td>
-                                                    04/04/2012
-                                                </td>
-                                                <td>
-                                                    Call in to confirm
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <div class="row clearfix">
+                                <div class="col-md-1 column " >
+                                    <P class="text-center text-success">
+                                        <br/><br/><br/><br/>测试<br/>用例<br/>步骤<br/>场景<br/>设计
+                                    </P>
                                 </div>
+                                <div class="col-md-11 column" id="stepBox">
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle center-block">
+                                            <input type="checkbox" value="1" ><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="checkbox"><a></a>
+                                        </div>
+                                        <div class="col-md-1 column TableTitle">
+                                            <input type="text" value="1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="集成测试用例1">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value="Util_sleep">
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='{"time":300}'>
+                                        </div>
+                                        <div class="col-md-2 column TableTitle">
+                                            <input type="text" value='4926'>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                            <div class="row clearfix" style="margin-top: 1%;border: 1px dashed #FFFFFF;">
+                                <div class="col-md-6 column">
+                                    <button type="button" class="btn btn-success btn-block btn-xs active">保存</button>
+                                </div>
+                                <div class="col-md-6 column">
+                                    <button type="button" class="btn btn-success btn-block btn-xs active">清除</button>
+                                </div>
+                            </div>
+                            </div>
                             </div>
                     </div>
                 </div>
