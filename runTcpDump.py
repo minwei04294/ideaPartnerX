@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
 __author__ = 'wangjun'
-
+#1sß
 from Common.logger import logger
 from Common.settings import *
 from Http_agent.CollectHttpData import CollectHttpData
